@@ -186,6 +186,77 @@ npm start
 
 Frontend URL: `http://localhost:4200`
 
+---
+
+## One-step: clone, configure and run (recommended)
+
+This project provides bash helpers to configure and run the full stack (Docker + backend + frontend). Below are concise commands and a Windows batch example to get the entire stack up and running quickly.
+
+Notes:
+- On Windows, run these commands from Git Bash (recommended) or WSL. Git Bash is required for the provided bash scripts (`config.sh`, `start.sh`, `stop.sh`).
+- The `config.sh` script generates the git-ignored `.env` files used by Docker and the backend.
+
+Unix / Git Bash (recommended):
+
+```bash
+git clone https://github.com/BrunoGilRamirez/Task-Manager.git
+cd Task-Manager
+# Initialize configuration files (creates docker/.env and back/task-manager/.env)
+bash config.sh --init
+
+# Start the full stack: Docker containers + backend + frontend
+bash start.sh
+```
+
+To start only Docker containers:
+
+```bash
+bash start.sh --docker
+```
+
+To stop everything (keep DB data):
+
+```bash
+bash stop.sh
+```
+
+To stop and remove volumes (full reset of the database):
+
+```bash
+bash stop.sh --prune
+```
+
+Windows batch (example) — requires Git Bash in PATH
+
+Create a file named `windows-start.bat` with the following contents and run it (double-click or `cmd.exe /c windows-start.bat`):
+
+```bat
+@echo off
+REM Requires Git Bash installed and available in PATH (sh.exe)
+set REPO=https://github.com/BrunoGilRamirez/Task-Manager.git
+
+if not exist Task-Manager (
+  git clone %REPO%
+)
+cd Task-Manager
+
+REM Run config and start using bash (Git Bash or WSL)
+bash config.sh --init
+bash start.sh
+
+pause
+```
+
+PowerShell one-liner (if Git Bash is available):
+
+```powershell
+bash -c './config.sh --init; ./start.sh'
+```
+
+If you prefer WSL, open a WSL shell and run the Unix commands above.
+
+---
+
 ## Usage Examples
 
 ### UI Flow
