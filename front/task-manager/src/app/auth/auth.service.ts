@@ -87,6 +87,16 @@ export class AuthService {
   }
 
   /**
+   * Updates only the name field of the current user in memory.
+   */
+  updateCurrentUserName(name: string): void {
+    const current = this.currentUserSubject.value;
+    if (current) {
+      this.currentUserSubject.next({ ...current, name });
+    }
+  }
+
+  /**
    * Register a new user
    */
   signUp(data: RegisterData): Observable<{ success: boolean; message: string }> {

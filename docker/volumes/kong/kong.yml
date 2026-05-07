@@ -1,0 +1,90 @@
+_format_version: "1.1"
+
+# =============================================================================
+# Kong Declarative Configuration – Task Manager Local
+#
+# Rutas expuestas en http://localhost:54321 :
+#   /auth/v1/*   →  GoTrue  (auth:9999)
+#   /rest/v1/*   →  PostgREST (rest:3000)
+#
+# No se usa key-auth para simplificar el desarrollo local.
+# La seguridad real la provee PostgREST mediante JWT Bearer tokens.
+# =============================================================================
+
+services:
+  # ── GoTrue (Autenticación) ─────────────────────────────────────────────────
+  - name: auth-v1
+    _comment: "GoTrue: sign-in, sign-up, forgot-password, reset-password"
+    url: http://auth:9999/
+    routes:
+      - name: auth-v1-all
+        strip_path: true
+        paths:
+          - /auth/v1/
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - "*"
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+            - HEAD
+          headers:
+            - Accept
+            - Accept-Language
+            - Authorization
+            - Content-Type
+            - apikey
+            - X-Client-Info
+            - X-Supabase-Api-Version
+          exposed_headers:
+            - X-Kong-Upstream-Latency
+            - X-Kong-Proxy-Latency
+            - Via
+          credentials: true
+          max_age: 3600
+
+  # ── PostgREST (REST API de la base de datos) ───────────────────────────────
+  - name: rest-v1
+    _comment: "PostgREST: CRUD de tasks y users (requiere Bearer JWT)"
+    url: http://rest:3000/
+    routes:
+      - name: rest-v1-all
+        strip_path: true
+        paths:
+          - /rest/v1/
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - "*"
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+            - HEAD
+          headers:
+            - Accept
+            - Accept-Language
+            - Authorization
+            - Content-Type
+            - apikey
+            - X-Client-Info
+            - X-Supabase-Api-Version
+            - Prefer
+            - Range
+          exposed_headers:
+            - X-Kong-Upstream-Latency
+            - X-Kong-Proxy-Latency
+            - Via
+            - Content-Range
+          credentials: true
+          max_age: 3600

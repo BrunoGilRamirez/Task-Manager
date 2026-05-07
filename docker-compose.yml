@@ -1,0 +1,163 @@
+version: "3.8"
+
+# =============================================================================
+# Supabase Local Stack – Task Manager
+#
+# Servicios:
+#   db      → PostgreSQL (con auth schema pre-configurado)
+#   auth    → GoTrue  (autenticación JWT)
+#   rest    → PostgREST (API REST de la base de datos)
+#   kong    → API Gateway (expuesto en :54321, igual que Supabase CLI)
+#   mail    → Mailpit  (captura emails de reset de contraseña)
+#
+# Uso:
+#   cp docker/.env.example docker/.env   # ajusta POSTGRES_PASSWORD al menos
+#   docker compose --env-file docker/.env up -d
+# =============================================================================
+
+services:
+  # ── 1. PostgreSQL ────────────────────────────────────────────────────────
+  db:
+    build:
+      context: ./docker/volumes/db
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-54322}:5432"
+    environment:
+      POSTGRES_HOST: /var/run/postgresql
+      PGPORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      PGDATABASE: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      PGUSER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXP: ${JWT_EXP:-3600}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-postgres}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+
+  # ── 2. GoTrue (Auth) ─────────────────────────────────────────────────────
+  auth:
+    image: supabase/gotrue:v2.170.0
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      API_EXTERNAL_URL: ${API_EXTERNAL_URL:-http://localhost:54321}
+
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: "postgres://supabase_auth_admin:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-postgres}"
+
+      GOTRUE_SITE_URL: ${SITE_URL:-http://localhost:4200}
+      GOTRUE_URI_ALLOW_LIST: "${ADDITIONAL_REDIRECT_URLS}"
+      GOTRUE_DISABLE_SIGNUP: "${DISABLE_SIGNUP:-false}"
+
+      GOTRUE_JWT_ADMIN_ROLES: service_role
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_EXP: ${JWT_EXP:-3600}
+      GOTRUE_JWT_SECRET: ${JWT_SECRET}
+
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      GOTRUE_MAILER_AUTOCONFIRM: "${ENABLE_EMAIL_AUTOCONFIRM:-true}"
+
+      GOTRUE_SMTP_HOST: ${SMTP_HOST:-mail}
+      GOTRUE_SMTP_PORT: ${SMTP_PORT:-1025}
+      GOTRUE_SMTP_USER: ${SMTP_USER:-fake@example.com}
+      GOTRUE_SMTP_PASS: ${SMTP_PASS:-fake}
+      GOTRUE_SMTP_SENDER_NAME: ${SMTP_SENDER_NAME:-Task Manager}
+
+      GOTRUE_MAILER_URLPATHS_INVITE: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_CONFIRMATION: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_RECOVERY: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: /auth/v1/verify
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:9999/health",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # ── 2b. db-setup – crea tablas públicas + RLS después de que auth migre ───
+  db-setup:
+    build:
+      context: ./docker/volumes/db-setup
+      dockerfile: Dockerfile
+    depends_on:
+      auth:
+        condition: service_healthy
+    restart: "no"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+
+  # ── 3. PostgREST (REST API) ───────────────────────────────────────────────
+  rest:
+    image: postgrest/postgrest:v12.2.3
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      PGRST_DB_URI: "postgres://authenticator:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-postgres}"
+      PGRST_DB_SCHEMAS: ${PGRST_DB_SCHEMAS:-public}
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+      PGRST_APP_SETTINGS_JWT_SECRET: ${JWT_SECRET}
+      PGRST_APP_SETTINGS_JWT_EXP: ${JWT_EXP:-3600}
+
+  # ── 4. Kong (API Gateway) ─────────────────────────────────────────────────
+  kong:
+    build:
+      context: ./docker/volumes/kong
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${KONG_HTTP_PORT:-54321}:8000/tcp"
+      - "${KONG_HTTPS_PORT:-54323}:8443/tcp"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /var/lib/kong/kong.yml
+      KONG_DNS_ORDER: LAST,A,CNAME
+      KONG_PLUGINS: request-transformer,cors,key-auth,acl,basic-auth
+      KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
+      KONG_NGINX_PROXY_PROXY_BUFFERS: 64 160k
+
+  # ── 5. Mailpit (captura de correos locales) ───────────────────────────────
+  mail:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "${MAILPIT_UI_PORT:-54324}:8025" # UI web para ver emails
+
+volumes:
+  db-data:
+    driver: local

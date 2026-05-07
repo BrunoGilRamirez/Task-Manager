@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .env
+docker/.env
 .vscode/
 .DS_Store
 coverage/

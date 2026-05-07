@@ -6,6 +6,7 @@ import { UserProfileForm } from '../profile-form/profile-form';
 import { UserProfileSecurity } from '../profile-security/profile-security';
 import type { ProfileFormValue } from '../profile-form/profile-form';
 import { UserService } from '../service/user-service';
+import { AuthUser } from '../../auth/models/auth.model';
 
 /**
  * Container component for the authenticated user's profile view and actions.
@@ -27,8 +28,8 @@ export class UserProfile {
    */
   handleSave(payload: ProfileFormValue): void {
     this.userService.updateProfile({ name: payload.name }).subscribe({
-      next: (updatedUser) => {
-        console.log('Profile updated:', updatedUser);
+      next: (updatedUser: AuthUser) => {
+        this.authService.updateCurrentUserName(updatedUser.name ?? '');
       },
       error: (error) => {
         console.error('Failed to update profile:', error);
