@@ -1,6 +1,6 @@
 ﻿# Task Manager
 
-Full-stack task management application with Angular 21 (frontend), Express + TypeScript (backend), and Supabase (database + auth).
+Full-stack task management application using Angular 21 (frontend), Express + TypeScript (backend), and Supabase (database + auth).
 
 ## Overview
 
@@ -10,7 +10,7 @@ Task Manager includes:
 - Task CRUD (create, read, update, delete, toggle complete)
 - User profile management
 - Protected frontend routes with auth guards
-- Backend validation, centralized errors, logging, compression, and cache headers
+- Backend validation, centralized error handling, logging, compression, and cache headers
 
 ## Tech Stack
 
@@ -33,115 +33,115 @@ Task Manager/
 '- TODO.md
 ```
 
-## Scripts de Gestión del Stack
+## Stack management scripts
 
-El proyecto incluye tres scripts Bash para gestionar el ciclo de vida del stack completo (Docker + backend + frontend). Requieren [Git Bash](https://git-scm.com/downloads) en Windows.
+The project includes three Bash scripts to manage the full stack lifecycle (Docker + backend + frontend). On Windows, use [Git Bash](https://git-scm.com/downloads).
 
-### `config.sh` — Configurar el entorno
+### `config.sh` — Configure environment
 
-Genera o actualiza de forma sincronizada todos los archivos de configuración (`docker/.env`, `back/task-manager/.env`, `environment.ts`, `angular.json`).
+Generates or synchronizes all configuration files (`docker/.env`, `back/task-manager/.env`, `environment.ts`, `angular.json`).
 
-#### Primer uso (tras `git clone`)
+#### First use (after `git clone`)
 
 ```bash
 bash config.sh --init
 ```
 
-Crea los tres archivos ignorados por git (`docker/.env`, `back/task-manager/.env`, `environment.ts`) con los valores por defecto listos para arrancar. No modifica archivos que ya existan.
+Creates the three git-ignored files (`docker/.env`, `back/task-manager/.env`, `environment.ts`) with default values ready to start. It does not modify files that already exist.
 
-#### Resetear a configuración por defecto
+#### Reset to default configuration
 
 ```bash
-bash config.sh --reset-conf        # pide confirmación
-bash config.sh --reset-conf -y     # sin confirmación
+bash config.sh --reset-conf        # prompts for confirmation
+bash config.sh --reset-conf -y     # no confirmation
 ```
 
-Sobreescribe todos los archivos de configuración con los valores por defecto, incluyendo `angular.json` (CSP). Útil cuando la configuración está inconsistente o se quiere volver al estado original.
+Overwrites all configuration files with default values, including `angular.json` (CSP). Useful when the configuration is inconsistent or you want to return to the original state.
 
-#### Personalización
+#### Customization
 
 ```bash
-# Ver configuración actual
+# Show current configuration
 bash config.sh --show
 
-# Cambiar puertos
+# Change ports
 bash config.sh -fp 2020 -bp 2333 -sbp 8080
 
-# Cambiar contraseña de PostgreSQL
-bash config.sh -pp "mi-nueva-contrasena-segura"
+# Change PostgreSQL password
+bash config.sh -pp "my-new-secure-password"
 
-# Cambiar JWT secret (regenera ANON_KEY y SERVICE_ROLE_KEY automáticamente)
-bash config.sh -js "mi-jwt-secret-de-al-menos-32-caracteres"
+# Change JWT secret (regenerates ANON_KEY and SERVICE_ROLE_KEY automatically)
+bash config.sh -js "my-jwt-secret-at-least-32-chars"
 
-# Deshabilitar registro + requerir verificación de email
+# Disable signup + require email verification
 bash config.sh --no-signup --no-autoconfirm
 
-# Ayuda completa
+# Full help
 bash config.sh --help
 ```
 
-| Opción                               | Alias                 | Descripción                                                 | Defecto         |
-| ------------------------------------ | --------------------- | ----------------------------------------------------------- | --------------- |
-| `--init`                             | —                     | Crea archivos de config faltantes con valores por defecto   | —               |
-| `--reset-conf`                       | —                     | Resetea toda la config a valores por defecto (sobreescribe) | —               |
-| `-y`                                 | `--yes`               | Salta la confirmación en `--reset-conf`                     | —               |
-| `-fp`                                | `--frontend-port`     | Puerto Angular dev server                                   | `4200`          |
-| `-bp`                                | `--backend-port`      | Puerto Express API                                          | `3000`          |
-| `-sbp`                               | `--supabase-port`     | Puerto Kong / Supabase HTTP                                 | `5433`          |
-| `-dbp`                               | `--db-port`           | Puerto PostgreSQL                                           | `5432`          |
-| `-mp`                                | `--mail-port`         | Puerto UI Mailpit                                           | `5435`          |
-| `-pp`                                | `--postgres-password` | Contraseña de PostgreSQL                                    | —               |
-| `-js`                                | `--jwt-secret`        | JWT secret (≥ 32 chars)                                     | —               |
-| `--no-signup` / `--signup`           | —                     | Deshabilita / habilita el registro                          | `--signup`      |
-| `--autoconfirm` / `--no-autoconfirm` | —                     | Auto-confirma / requiere verificación de email              | `--autoconfirm` |
-| `--show`                             | —                     | Muestra la configuración actual sin modificar nada          | —               |
+| Option                               | Alias                 | Description                                     | Default         |
+| ------------------------------------ | --------------------- | ----------------------------------------------- | --------------- |
+| `--init`                             | —                     | Create missing config files with default values | —               |
+| `--reset-conf`                       | —                     | Reset all config to defaults (overwrites)       | —               |
+| `-y`                                 | `--yes`               | Skip confirmation for `--reset-conf`            | —               |
+| `-fp`                                | `--frontend-port`     | Angular dev server port                         | `4200`          |
+| `-bp`                                | `--backend-port`      | Express API port                                | `3000`          |
+| `-sbp`                               | `--supabase-port`     | Kong / Supabase HTTP port                       | `5433`          |
+| `-dbp`                               | `--db-port`           | PostgreSQL port                                 | `5432`          |
+| `-mp`                                | `--mail-port`         | Mailpit UI port                                 | `5435`          |
+| `-pp`                                | `--postgres-password` | PostgreSQL password                             | —               |
+| `-js`                                | `--jwt-secret`        | JWT secret (≥ 32 chars)                         | —               |
+| `--no-signup` / `--signup`           | —                     | Disable / enable user signup                    | `--signup`      |
+| `--autoconfirm` / `--no-autoconfirm` | —                     | Auto-confirm / require email verification       | `--autoconfirm` |
+| `--show`                             | —                     | Show current configuration without changes      | —               |
 
-> Tras cambiar contraseñas, puertos Docker o JWT secret, reinicia con:
+> After changing passwords, Docker ports, or the JWT secret, restart with:
 > `bash stop.sh --prune && bash start.sh`
 >
-> Tras cambiar solo puertos de aplicación (frontend / backend):
+> After changing only application ports (frontend / backend):
 > `bash stop.sh && bash start.sh`
 
 ---
 
-### `start.sh` — Levantar el stack
+### `start.sh` — Start the stack
 
 ```bash
-# Levantar todo: Docker + backend + frontend
+# Start everything: Docker + backend + frontend
 bash start.sh
 
-# Solo levantar / verificar los contenedores Docker
+# Only start / check Docker containers
 bash start.sh --docker
 ```
 
-| Opción           | Descripción                                             |
-| ---------------- | ------------------------------------------------------- |
-| _(sin opciones)_ | Levanta Docker, backend (nodemon) y frontend (ng serve) |
-| `--docker`       | Solo verifica / levanta los contenedores Docker         |
+| Option        | Description                                              |
+| ------------- | -------------------------------------------------------- |
+| _(no option)_ | Starts Docker, backend (nodemon) and frontend (ng serve) |
+| `--docker`    | Only checks / starts the Docker containers               |
 
-Lee los puertos desde `docker/.env` y `back/task-manager/.env` automáticamente.
-Para detener el proceso, presiona **Ctrl+C** (los contenedores Docker siguen corriendo).
+Reads ports from `docker/.env` and `back/task-manager/.env` automatically.
+To stop the process, press **Ctrl+C** (Docker containers will keep running).
 
 ---
 
-### `stop.sh` — Detener el stack
+### `stop.sh` — Stop the stack
 
 ```bash
-# Detener procesos Node + contenedores Docker (conserva la base de datos)
+# Stop Node processes + Docker containers (keep DB data)
 bash stop.sh
 
-# Solo detener los contenedores Docker
+# Only stop Docker containers
 bash stop.sh --docker
 
-# Detener contenedores y eliminar volúmenes (reset total de la DB)
+# Stop containers and remove volumes (full DB reset)
 bash stop.sh --prune
 ```
 
-| Opción           | Descripción                                                               |
-| ---------------- | ------------------------------------------------------------------------- |
-| _(sin opciones)_ | Mata todos los procesos `node.exe` y detiene los contenedores             |
-| `--docker`       | Solo detiene los contenedores (conserva procesos Node)                    |
-| `--prune`        | Detiene contenedores **y borra los volúmenes** (elimina la base de datos) |
+| Option        | Description                                                     |
+| ------------- | --------------------------------------------------------------- |
+| _(no option)_ | Kills all `node.exe` processes and stops Docker containers      |
+| `--docker`    | Only stops containers (keeps Node processes)                    |
+| `--prune`     | Stops containers **and removes volumes** (deletes the database) |
 
 ---
 
