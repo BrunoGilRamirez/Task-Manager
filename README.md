@@ -193,6 +193,7 @@ Frontend URL: `http://localhost:4200`
 This project provides bash helpers to configure and run the full stack (Docker + backend + frontend). Below are concise commands and a Windows batch example to get the entire stack up and running quickly.
 
 Notes:
+
 - On Windows, run these commands from Git Bash (recommended) or WSL. Git Bash is required for the provided bash scripts (`config.sh`, `start.sh`, `stop.sh`).
 - The `config.sh` script generates the git-ignored `.env` files used by Docker and the backend.
 

@@ -18,7 +18,6 @@ build/
 .next/
 out/
 .svelte-kit/
-.github/
 .hintrc
 supabase/.temp
 docs/support_material.md
