@@ -7,7 +7,7 @@
     <!-- Back Button -->
     <div class="task-details-header">
       <button class="btn-back" (click)="goBack()">
-        <span>&larr; Volver</span>
+        <span>&larr; Back</span>
       </button>
     </div>
     @if (loading()) {
@@ -43,16 +43,16 @@
             <h2 class="details-title">{{ taskTitle() }}</h2>
             <div class="status-badge" [class.status-badge--completed]="isCompleted()">
               <span class="status-icon">{{ isCompleted() ? 'OK' : '...' }}</span>
-              <span class="status-text">{{ isCompleted() ? 'Completada' : 'En progreso' }}</span>
+              <span class="status-text">{{ isCompleted() ? 'Completed' : 'In Progress' }}</span>
             </div>
           </div>
           <div class="details-meta">
             <div class="meta-item">
-              <span class="meta-label">Creada:</span>
+              <span class="meta-label">Created:</span>
               <time class="meta-value">{{ createdAt() | date: 'medium' }}</time>
             </div>
             <div class="meta-item">
-              <span class="meta-label">Actualizada:</span>
+              <span class="meta-label">Updated:</span>
               <time class="meta-value">{{ updatedAt() | date: 'medium' }}</time>
             </div>
           </div>
@@ -60,7 +60,7 @@
 
         <!-- Description Section -->
         <div class="details-section">
-          <h3 class="section-title">Descripcion</h3>
+          <h3 class="section-title">Description</h3>
           <div class="section-content">
             <p class="description-text">{{ taskDescription() }}</p>
           </div>
@@ -69,9 +69,9 @@
         <!-- Actions -->
         <div class="details-actions">
           <button class="btn btn-secondary" (click)="toggleComplete()">
-            {{ isCompleted() ? 'Marcar como pendiente' : 'Marcar como completada' }}
+            {{ isCompleted() ? 'Mark as pending' : 'Mark as completed' }}
           </button>
-          <button class="btn btn-primary" (click)="editTask()">Editar</button>
+          <button class="btn btn-primary" (click)="editTask()">Edit</button>
         </div>
       </article>
     } @else {

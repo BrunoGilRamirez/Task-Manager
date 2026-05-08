@@ -146,8 +146,6 @@ describe('TasksContainer', () => {
     await fixture.whenStable();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.empty-state p')?.textContent).toContain(
-      'No hay tareas para mostrar',
-    );
+    expect(compiled.querySelector('.empty-state p')?.textContent).toContain('No tasks to display');
   });
 });

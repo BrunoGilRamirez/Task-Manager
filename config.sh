@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # =============================================================================
-# config.sh – Genera / reconfigura el entorno de Task Manager
-#
-# Actualiza de forma sincronizada:
-#   - docker/.env                                    (stack Docker local)
-#   - back/task-manager/.env                         (backend Express)
+# config.sh – Generate / reconfigure the Task Manager environment
+
+# Updates synchronously:
+#   - docker/.env                                    (local Docker stack)
+#   - back/task-manager/.env                         (Express backend)
 #   - front/task-manager/src/app/core/environment.ts (Angular)
 #   - front/task-manager/angular.json                (CSP connect-src)
 #
-# Uso:
-#   bash config.sh [opciones]
+# Usage:
+#   bash config.sh [options]
 #   bash config.sh --show
 #   bash config.sh -h
 # =============================================================================
@@ -31,64 +31,64 @@ log_error() { echo -e "${RED}[ERROR]${RESET} $*" >&2; }
 log_step()  { echo -e "\n${BOLD}━━━ $* ━━━${RESET}"; }
 
 # =============================================================================
-# Ayuda
+# Help / Usage
 # =============================================================================
 usage() {
   cat <<EOF
 
-${BOLD}config.sh${RESET} – Configura el stack de Task Manager
+${BOLD}config.sh${RESET} – Configure the Task Manager stack
 
-${BOLD}USO${RESET}
-  bash config.sh [opciones]
+${BOLD}USAGE${RESET}
+  bash config.sh [options]
 
-${BOLD}PUERTOS${RESET}
-  -fp  | --frontend-port    <N>    Puerto Angular dev server      (defecto: 4200)
-  -bp  | --backend-port     <N>    Puerto Express API             (defecto: 3000)
-  -sbp | --supabase-port    <N>    Puerto Kong / Supabase HTTP    (defecto: 5433)
-  -dbp | --db-port          <N>    Puerto PostgreSQL              (defecto: 5432)
-  -mp  | --mail-port        <N>    Puerto UI Mailpit              (defecto: 5435)
+${BOLD}PORTS${RESET}
+  -fp  | --frontend-port    <N>    Angular dev server port      (default: 4200)
+  -bp  | --backend-port     <N>    Express API port             (default: 3000)
+  -sbp | --supabase-port    <N>    Kong / Supabase HTTP port    (default: 5433)
+  -dbp | --db-port          <N>    PostgreSQL port              (default: 5432)
+  -mp  | --mail-port        <N>    Mailpit UI port              (default: 5435)
 
-${BOLD}SEGURIDAD${RESET}
-  -pp  | --postgres-password <val>  Contraseña de PostgreSQL
+${BOLD}SECURITY${RESET}
+  -pp  | --postgres-password <val>  PostgreSQL password
   -js  | --jwt-secret        <val>  JWT secret (≥ 32 chars)
-                                    Regenera ANON_KEY y SERVICE_ROLE_KEY automáticamente
+                                    Automatically regenerates ANON_KEY and SERVICE_ROLE_KEY
 
-${BOLD}COMPORTAMIENTO${RESET}
-  --no-signup                Deshabilita el registro de nuevos usuarios
-  --signup                   Habilita el registro de nuevos usuarios
-  --autoconfirm              Auto-confirma emails al registrarse (sin verificación)
-  --no-autoconfirm           Requiere verificación de email
+${BOLD}BEHAVIOR${RESET}
+  --no-signup                Disable new user signups
+  --signup                   Enable new user signups
+  --autoconfirm              Auto-confirm emails on signup (no verification)
+  --no-autoconfirm           Require email verification
 
-${BOLD}UTILIDADES${RESET}
-  --init                     Crea los archivos de config faltantes con valores por defecto
-                             (ideal tras un git clone; no sobreescribe archivos existentes)
-  --reset-conf               Resetea toda la configuración a los valores por defecto
-                             (sobreescribe archivos existentes; pide confirmación)
-  -y  | --yes                Salta la confirmación en --reset-conf
-  --show                     Muestra la configuración actual sin modificar nada
-  -h  | --help               Muestra este mensaje
+${BOLD}UTILITIES${RESET}
+  --init                     Create missing config files with default values
+                             (useful after a git clone; does not overwrite existing files)
+  --reset-conf               Reset all configuration to default values
+                             (overwrites existing files; prompts for confirmation)
+  -y  | --yes                Skip confirmation for --reset-conf
+  --show                     Show current configuration without changing anything
+  -h  | --help               Show this message
 
-${BOLD}EJEMPLOS${RESET}
-  bash config.sh --init                          # primer setup tras git clone
-  bash config.sh --reset-conf                    # resetear toda la config
-  bash config.sh --reset-conf -y                 # resetear sin confirmar
+${BOLD}EXAMPLES${RESET}
+  bash config.sh --init                          # initial setup after git clone
+  bash config.sh --reset-conf                    # reset all configuration
+  bash config.sh --reset-conf -y                 # reset without confirmation
   bash config.sh -fp 2020 -bp 2333 -sbp 8080
-  bash config.sh -pp "mi-nueva-contraseña-segura"
-  bash config.sh -js "mi-jwt-secret-de-al-menos-32-caracteres"
+  bash config.sh -pp "my-new-secure-password"
+  bash config.sh -js "my-jwt-secret-with-at-least-32-chars"
   bash config.sh --no-signup --no-autoconfirm
   bash config.sh --show
 
-${BOLD}ARCHIVOS ACTUALIZADOS${RESET}
+${BOLD}UPDATED FILES${RESET}
   docker/.env
   back/task-manager/.env
   front/task-manager/src/app/core/environment.ts
   front/task-manager/angular.json  (CSP connect-src)
 
-${BOLD}NOTA${RESET}
-  Tras cambiar contraseñas o puertos Docker, reinicia el stack:
+${BOLD}NOTE${RESET}
+  After changing passwords or Docker ports, restart the stack:
     bash stop.sh --prune && bash start.sh
 
-  Para cambios solo de puertos de aplicación (backend / frontend):
+  For changes only affecting application ports (backend / frontend):
     bash stop.sh && bash start.sh
 
 EOF
@@ -98,8 +98,8 @@ EOF
 # Helpers
 # =============================================================================
 
-# Lee una variable de un .env; retorna $default si el archivo no existe o la
-# variable no está definida.
+# Read a variable from a .env; returns $default if the file doesn't exist or
+# the variable is not defined.
 get_env_var() {
   local file="$1" key="$2" default="${3:-}"
   if [[ -f "$file" ]]; then
@@ -111,8 +111,8 @@ get_env_var() {
   fi
 }
 
-# Establece / actualiza una variable en un archivo .env.
-# Usa Python para manejar de forma segura valores con caracteres especiales.
+# Set / update a variable in a .env file.
+# Uses Python to safely handle values with special characters.
 set_env_var() {
   local file="$1" key="$2" value="$3"
   python3 - "$file" "$key" "$value" <<'PYEOF'
@@ -139,8 +139,8 @@ with open(path, 'w', encoding='utf-8') as f:
 PYEOF
 }
 
-# Genera ANON_KEY y SERVICE_ROLE_KEY a partir del JWT_SECRET con Node.js.
-# Imprime dos líneas: primero anon_key, luego service_role_key.
+# Generate ANON_KEY and SERVICE_ROLE_KEY from JWT_SECRET using Node.js.
+# Prints two lines: first anon_key, then service_role_key.
 generate_jwt_keys() {
   local secret="$1"
   node - "$secret" <<'JSEOF'
@@ -160,8 +160,8 @@ console.log(makeJWT({ iss: 'supabase-demo', role: 'service_role', exp }));
 JSEOF
 }
 
-# Actualiza supabaseUrl, supabaseKey y backendUrl en environment.ts.
-# Solo toca líneas no comentadas (que empiezan con espacios, no con //).
+# Update supabaseUrl, supabaseKey and backendUrl in environment.ts.
+# Only touches uncommented lines (those starting with spaces, not with //).
 update_env_ts() {
   local file="$1" sb_url="$2" anon_key="$3" back_url="$4"
   python3 - "$file" "$sb_url" "$anon_key" "$back_url" <<'PYEOF'
@@ -172,17 +172,17 @@ path, sb_url, anon_key, back_url = sys.argv[1], sys.argv[2], sys.argv[3], sys.ar
 with open(path, 'r', encoding='utf-8') as f:
     content = f.read()
 
-# supabaseUrl — solo líneas no comentadas
-# La línea activa es "  supabaseUrl: '...'," (precedida por \n + espacios)
-# La línea comentada es "  // supabaseUrl: '...'," (tiene // entre los espacios y la clave)
+# supabaseUrl — only uncommented lines
+# The active line is "  supabaseUrl: '...'," (preceded by \n + spaces)
+# The commented line is "  // supabaseUrl: '...'," (has // between spaces and the key)
 def rep_sb_url(m):
     return m.group(1) + "supabaseUrl: '" + sb_url + "'"
 content = re.sub(r'(\n[ \t]+)supabaseUrl:\s*\'[^\']*\'', rep_sb_url, content)
 
-# supabaseKey — puede estar en formato de dos líneas:
+# supabaseKey — may be in a multiline format:
 #   supabaseKey:
 #     'eyJ...',
-# o en una sola línea.
+# or in a single line.
 ml_pat = re.compile(r'(\n[ \t]+)supabaseKey:\s*\n[ \t]+\'[^\']*\'')
 if ml_pat.search(content):
     def rep_key_ml(m):
@@ -227,7 +227,7 @@ with open(path, 'w', encoding='utf-8') as f:
 PYEOF
 }
 
-# Muestra la configuración actual con valores enmascarados para secretos.
+# Display current configuration with secrets masked.
 show_config() {
   local fp sbp dbp mp bp pp js anon srk ds ac
 
@@ -243,7 +243,7 @@ show_config() {
   ds=$(get_env_var  "$DOCKER_ENV" "DISABLE_SIGNUP"           "false")
   ac=$(get_env_var  "$DOCKER_ENV" "ENABLE_EMAIL_AUTOCONFIRM" "true")
 
-  # Enmascara: muestra los 6 primeros y los 4 últimos chars
+  # Mask: shows the first 6 and the last 4 characters
   mask() {
     local v="$1"
     local len="${#v}"
@@ -255,22 +255,22 @@ show_config() {
   }
 
   echo ""
-  echo -e "${BOLD}━━━ Configuración Actual de Task Manager ━━━${RESET}"
+  echo -e "${BOLD}━━━ Current Task Manager Configuration ━━━${RESET}"
   echo ""
-  echo -e "${BOLD}  Puertos${RESET}"
+  echo -e "${BOLD}  Ports${RESET}"
   printf "    %-32s %s\n" "Frontend  (Angular dev server):" "$fp"
   printf "    %-32s %s\n" "Backend   (Express API):"        "$bp"
   printf "    %-32s %s\n" "Supabase  (Kong HTTP):"          "$sbp"
   printf "    %-32s %s\n" "PostgreSQL:"                     "$dbp"
   printf "    %-32s %s\n" "Mailpit UI:"                     "$mp"
   echo ""
-  echo -e "${BOLD}  Seguridad${RESET}"
+  echo -e "${BOLD}  Security${RESET}"
   printf "    %-32s %s\n" "Postgres password:"   "$(mask "$pp")"
   printf "    %-32s %s\n" "JWT secret:"          "$(mask "$js")"
   printf "    %-32s %s\n" "ANON_KEY:"            "$(mask "$anon")"
   printf "    %-32s %s\n" "SERVICE_ROLE_KEY:"    "$(mask "$srk")"
   echo ""
-  echo -e "${BOLD}  Comportamiento${RESET}"
+  echo -e "${BOLD}  Behavior${RESET}"
   printf "    %-32s %s\n" "DISABLE_SIGNUP:"           "$ds"
   printf "    %-32s %s\n" "ENABLE_EMAIL_AUTOCONFIRM:" "$ac"
   echo ""
@@ -291,17 +291,17 @@ readonly DEF_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1k
 readonly DEF_SRK="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.kcyKZAiwnnBG9t6IVGO17bcVw574pVynTHYVdF4q-p0"
 
 # =============================================================================
-# write_defaults – Escribe los archivos de configuración con valores por defecto
+# write_defaults – Write configuration files with default values
 #
-# mode="init"  → solo crea archivos que NO existen (no sobreescribe)
-# mode="reset" → sobreescribe todos los archivos existentes o los crea
+# mode="init"  → only creates files that DO NOT exist (does not overwrite)
+# mode="reset" → overwrites all existing files or creates them
 # =============================================================================
 write_defaults() {
   local mode="$1"
   local created=0 skipped=0
 
-  # En reset: capturar puertos actuales del angular.json ANTES de sobreescribir
-  # (necesario para revertir el CSP a los puertos por defecto)
+  # On reset: capture current angular.json ports BEFORE overwriting
+  # (necessary to revert the CSP to the default ports)
   local old_bp="$DEF_BP" old_sbp="$DEF_SBP"
   if [[ "$mode" == "reset" ]]; then
     old_bp=$( get_env_var "$BACK_ENV"    "PORT"           "$DEF_BP"  )
@@ -325,11 +325,11 @@ POSTGRES_USER=postgres
 POSTGRES_PORT=5432
 
 # ── JWT ─────────────────────────────────────────────────────────────────────
-# Mínimo 32 caracteres. No compartas este valor en producción.
+# Minimum 32 characters. Do not share this value in production.
 JWT_SECRET=your-super-secret-jwt-token-with-at-least-32-characters-long
 JWT_EXP=3600
 
-# Claves JWT pre-generadas para el JWT_SECRET anterior.
+# Pre-generated JWT keys for the JWT_SECRET above.
 ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.b_lMH2mc5km7S9Lw_sRGGqE9IeiahYu-caevDcacKiY
 SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.kcyKZAiwnnBG9t6IVGO17bcVw574pVynTHYVdF4q-p0
 
@@ -344,7 +344,7 @@ SITE_URL=http://localhost:4200
 ADDITIONAL_REDIRECT_URLS=http://localhost:4200,http://localhost:4200/reset-password
 
 # ── Email (Mailpit) ──────────────────────────────────────────────────────────
-# Con ENABLE_EMAIL_AUTOCONFIRM=true los registros no necesitan verificar email.
+# With ENABLE_EMAIL_AUTOCONFIRM=true signups do not need to verify email.
 ENABLE_EMAIL_AUTOCONFIRM=true
 SMTP_HOST=mail
 SMTP_PORT=1025
@@ -353,14 +353,14 @@ SMTP_PASS=fake
 SMTP_SENDER_NAME=Task Manager
 MAILPIT_UI_PORT=5435
 
-# ── Miscelánea ───────────────────────────────────────────────────────────────
+# ── Misc ───────────────────────────────────────────────────────────────────
 DISABLE_SIGNUP=false
 PGRST_DB_SCHEMAS=public
 ENVEOF
-    log_ok "docker/.env $( [[ "$mode" == "reset" ]] && echo "reseteado" || echo "creado" )."
+    log_ok "docker/.env $( [[ "$mode" == "reset" ]] && echo "reset" || echo "created" )."
     created=$((created + 1))
   else
-    log_info "docker/.env ya existe — saltando. (usa --reset-conf para sobreescribir)"
+    log_info "docker/.env already exists — skipping. (use --reset-conf to overwrite)"
     skipped=$((skipped + 1))
   fi
 
@@ -379,10 +379,10 @@ SUPABASE_PUBLISHABLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 
 FRONTEND_RESET_PASSWORD_URL=http://localhost:4200/reset-password
 ENVEOF
-    log_ok "back/task-manager/.env $( [[ "$mode" == "reset" ]] && echo "reseteado" || echo "creado" )."
+    log_ok "back/task-manager/.env $( [[ "$mode" == "reset" ]] && echo "reset" || echo "created" )."
     created=$((created + 1))
   else
-    log_info "back/task-manager/.env ya existe — saltando. (usa --reset-conf para sobreescribir)"
+    log_info "back/task-manager/.env already exists — skipping. (use --reset-conf to overwrite)"
     skipped=$((skipped + 1))
   fi
 
@@ -402,21 +402,21 @@ TSEOF
     log_ok "environment.ts $( [[ "$mode" == "reset" ]] && echo "reseteado" || echo "creado" )."
     created=$((created + 1))
   else
-    log_info "environment.ts ya existe — saltando. (usa --reset-conf para sobreescribir)"
+    log_info "environment.ts already exists — skipping. (use --reset-conf to overwrite)"
     skipped=$((skipped + 1))
   fi
 
-  # ── angular.json CSP — solo en reset (en init está en git con valores por defecto) ─
+  # ── angular.json CSP — only on reset (in init it's in git with default values) ─
   if [[ "$mode" == "reset" ]] && [[ -f "$ANGULAR_JSON" ]]; then
     update_angular_csp "$ANGULAR_JSON" "$old_bp" "$DEF_BP" "$old_sbp" "$DEF_SBP"
-    log_ok "angular.json CSP reseteado a puertos por defecto."
+    log_ok "angular.json CSP reset to default ports."
   fi
 
   # ── Resumen ──────────────────────────────────────────────────────────────────
   echo ""
   if [[ "$mode" == "init" ]]; then
     echo -e "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-    echo -e "${BOLD}${GREEN}  ✅  Entorno inicializado${RESET}"
+    echo -e "${BOLD}${GREEN}  ✅  Environment initialized${RESET}"
     echo -e "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     printf "  ${CYAN}%-12s${RESET} →  http://localhost:%s\n" "Frontend"   "$DEF_FP"
     printf "  ${CYAN}%-12s${RESET} →  http://localhost:%s\n" "Backend"    "$DEF_BP"
@@ -424,13 +424,13 @@ TSEOF
     printf "  ${CYAN}%-12s${RESET} →  localhost:%s\n"        "PostgreSQL" "$DEF_DBP"
     printf "  ${CYAN}%-12s${RESET} →  http://localhost:%s\n" "Mailpit"    "$DEF_MP"
     echo -e "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-    [[ $skipped -gt 0 ]] && log_warn "$skipped archivo(s) ya existían y no se modificaron."
+    [[ $skipped -gt 0 ]] && log_warn "$skipped file(s) already existed and were not modified."
     echo ""
-    log_info "Para personalizar la configuración: bash config.sh --help"
-    log_info "Para levantar el stack:             bash start.sh"
+    log_info "To customize configuration: bash config.sh --help"
+    log_info "To bring up the stack:        bash start.sh"
   else
     echo -e "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-    echo -e "${BOLD}${GREEN}  ✅  Configuración reseteada a valores por defecto${RESET}"
+    echo -e "${BOLD}${GREEN}  ✅  Configuration reset to default values${RESET}"
     echo -e "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     printf "  ${CYAN}%-12s${RESET} →  http://localhost:%s\n" "Frontend"   "$DEF_FP"
     printf "  ${CYAN}%-12s${RESET} →  http://localhost:%s\n" "Backend"    "$DEF_BP"
@@ -439,7 +439,7 @@ TSEOF
     printf "  ${CYAN}%-12s${RESET} →  http://localhost:%s\n" "Mailpit"    "$DEF_MP"
     echo -e "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     echo ""
-    log_warn "Si el stack estaba corriendo, reinicia con:"
+    log_warn "If the stack was running, restart with:"
     echo -e "  ${BOLD}bash stop.sh --prune && bash start.sh${RESET}"
   fi
   echo ""
@@ -472,7 +472,7 @@ while [[ $# -gt 0 ]]; do
     --reset-conf)               MODE="reset-conf";   shift ;;
     -y | --yes)                 YES_FLAG=true;       shift ;;
     -h | --help)                usage; exit 0 ;;
-    *) log_error "Opción desconocida: $1"; usage; exit 1 ;;
+    *) log_error "Unknown option: $1"; usage; exit 1 ;;
   esac
 done
 
@@ -484,7 +484,7 @@ fi
 
 # ── Modo --init: crear archivos faltantes con valores por defecto ─────────────
 if [[ "$MODE" == "init" ]]; then
-  log_step "Inicializando entorno"
+  log_step "Initializing environment"
   write_defaults "init"
   exit 0
 fi
@@ -493,15 +493,15 @@ fi
 if [[ "$MODE" == "reset-conf" ]]; then
   if [[ "$YES_FLAG" != "true" ]]; then
     echo ""
-    log_warn "Esto sobreescribirá toda la configuración personalizada con los valores por defecto."
-    printf "  ¿Continuar? [y/N] "
+    log_warn "This will overwrite all customized configuration with defaults."
+    printf "  Continue? [y/N] "
     read -r CONFIRM
     if [[ "${CONFIRM,,}" != "y" ]]; then
-      log_info "Operación cancelada."
+      log_info "Operation cancelled."
       exit 0
     fi
   fi
-  log_step "Reseteando configuración a valores por defecto"
+  log_step "Resetting configuration to default values"
   write_defaults "reset"
   exit 0
 fi
@@ -514,7 +514,7 @@ if [[ -z "$NEW_FP$NEW_BP$NEW_SBP$NEW_DBP$NEW_MP$NEW_PP$NEW_JS$NEW_DS$NEW_AC" ]];
 fi
 
 # =============================================================================
-# Leer valores actuales desde los archivos de configuración
+# Read current values from configuration files
 # =============================================================================
 CURR_FP=$(get_env_var  "$DOCKER_ENV" "FRONTEND_PORT"            "4200")
 CURR_SBP=$(get_env_var "$DOCKER_ENV" "KONG_HTTP_PORT"           "5433")
@@ -542,7 +542,7 @@ FINAL_AC="${NEW_AC:-$CURR_AC}"
 # =============================================================================
 # Validaciones
 # =============================================================================
-log_step "Validando parámetros"
+log_step "Validating parameters"
 
 # Puertos deben ser enteros en el rango 1024–65535
 for VAR in FINAL_FP FINAL_BP FINAL_SBP FINAL_DBP FINAL_MP; do
@@ -550,7 +550,7 @@ for VAR in FINAL_FP FINAL_BP FINAL_SBP FINAL_DBP FINAL_MP; do
   if ! [[ "$PORT_VAL" =~ ^[0-9]+$ ]] || \
      [[ "$PORT_VAL" -lt 1024 ]] || \
      [[ "$PORT_VAL" -gt 65535 ]]; then
-    log_error "$VAR tiene un valor inválido: '$PORT_VAL' (debe ser un entero 1024–65535)"
+    log_error "$VAR has an invalid value: '$PORT_VAL' (must be an integer 1024–65535)"
     exit 1
   fi
 done
@@ -565,13 +565,13 @@ fi
 PORTS=("$FINAL_FP" "$FINAL_BP" "$FINAL_SBP" "$FINAL_DBP" "$FINAL_MP")
 UNIQUE_PORTS=$(printf '%s\n' "${PORTS[@]}" | sort -u | wc -l)
 if [[ "$UNIQUE_PORTS" -lt "${#PORTS[@]}" ]]; then
-  log_warn "Dos o más puertos tienen el mismo valor. Asegúrate de que sea intencional."
+  log_warn "Two or more ports share the same value. Ensure this is intentional."
 fi
 
-log_ok "Parámetros válidos."
+log_ok "Parameters valid."
 
 # =============================================================================
-# Regenerar JWT keys si el secret cambió
+# Regenerate JWT keys if the secret changed
 # =============================================================================
 FINAL_ANON="$CURR_ANON"
 FINAL_SRK="$CURR_SRK"
@@ -579,7 +579,7 @@ FINAL_SRK="$CURR_SRK"
 if [[ "$FINAL_JS" != "$CURR_JS" ]]; then
   log_step "Regenerando JWT keys"
   if ! command -v node &>/dev/null; then
-    log_error "Node.js no está instalado. Es necesario para generar JWT keys."
+    log_error "Node.js is not installed. Required to generate JWT keys."
     exit 1
   fi
   JWT_OUTPUT=$(generate_jwt_keys "$FINAL_JS")
@@ -635,7 +635,7 @@ if [[ -f "$FRONT_ENV_TS" ]]; then
     "http://localhost:${FINAL_BP}"
   log_ok "environment.ts actualizado."
 else
-  log_warn "No se encontró $FRONT_ENV_TS — saltando."
+  log_warn "$FRONT_ENV_TS not found — skipping."
 fi
 
 # =============================================================================
@@ -649,7 +649,7 @@ if [[ -f "$ANGULAR_JSON" ]]; then
     "$CURR_SBP" "$FINAL_SBP"
   log_ok "angular.json actualizado."
 else
-  log_warn "No se encontró $ANGULAR_JSON — saltando."
+  log_warn "$ANGULAR_JSON not found — skipping."
 fi
 
 # =============================================================================
@@ -657,7 +657,7 @@ fi
 # =============================================================================
 echo ""
 echo -e "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo -e "${BOLD}${GREEN}  ✅  Configuración actualizada${RESET}"
+echo -e "${BOLD}${GREEN}  ✅  Configuration updated${RESET}"
 echo -e "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 printf "  ${CYAN}%-12s${RESET} →  http://localhost:%s\n" "Frontend"  "$FINAL_FP"
 printf "  ${CYAN}%-12s${RESET} →  http://localhost:%s\n" "Backend"   "$FINAL_BP"
@@ -667,7 +667,7 @@ printf "  ${CYAN}%-12s${RESET} →  http://localhost:%s\n" "Mailpit"   "$FINAL_M
 echo -e "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
 
-# Indicar qué tipo de reinicio es necesario
+# Indicate which type of restart is required
 NEEDS_PRUNE=false
 NEEDS_RESTART=false
 

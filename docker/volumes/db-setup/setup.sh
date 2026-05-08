@@ -1,32 +1,32 @@
 #!/usr/bin/env bash
 # =============================================================================
-# Fase 2 – Tablas del dominio público + RLS
+# Phase 2 – Public domain tables + RLS
 #
-# Se ejecuta DESPUÉS de que GoTrue haya terminado sus migraciones (auth está
-# healthy). En este punto auth.users ya existe con su estructura completa y
-# auth.uid() / auth.role() ya están definidas, por lo que podemos crear las
-# tablas públicas con FK y las políticas RLS sin problemas.
+# Runs AFTER GoTrue has finished its migrations (auth is healthy).
+# At this point auth.users already exists with its full structure and
+# auth.uid() / auth.role() are defined, so we can safely create the
+# public tables with FKs and RLS policies.
 # =============================================================================
 set -euo pipefail
 
-echo "[db-setup] Esperando a que PostgreSQL esté listo..."
+echo "[db-setup] Waiting for PostgreSQL to be ready..."
 until pg_isready -h db -p 5432 -U "$POSTGRES_USER" -d "$POSTGRES_DB"; do
   sleep 2
 done
 
-echo "[db-setup] Creando schema público (tablas + RLS)..."
+echo "[db-setup] Creating public schema (tables + RLS)..."
 psql -v ON_ERROR_STOP=1 \
      -h db -p 5432 \
      -U "$POSTGRES_USER" \
      -d "$POSTGRES_DB" <<-'EOSQL'
 
 -- =============================================================================
--- Tablas del dominio público
+-- Public domain tables
 -- =============================================================================
 
 SET search_path TO public;
 
--- ── Función helper: mantener updated_at actualizado ──────────────────────────
+-- ── Helper function: keep updated_at up to date ──────────────────────────
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS public.tasks (
     REFERENCES public.users (id) ON UPDATE CASCADE ON DELETE CASCADE
 ) TABLESPACE pg_default;
 
--- Trigger: mantener updated_at actualizado en tasks
+-- Trigger: keep updated_at up to date on tasks
 DROP TRIGGER IF EXISTS update_tasks_updated_at ON public.tasks;
 CREATE TRIGGER update_tasks_updated_at
   BEFORE UPDATE ON public.tasks
@@ -67,8 +67,8 @@ CREATE TRIGGER update_tasks_updated_at
 
 -- =============================================================================
 -- Trigger: auto-crear fila en public.users cuando se registra en auth.users
--- Se usa SECURITY DEFINER para que la inserción se ejecute como postgres
--- (bypassea RLS) independientemente del rol que lanzó el evento.
+-- Uses SECURITY DEFINER so the insert runs as postgres
+-- (bypasses RLS) regardless of the role that triggered the event.
 -- =============================================================================
 
 CREATE OR REPLACE FUNCTION public.handle_new_user()
@@ -108,7 +108,7 @@ ON CONFLICT (id) DO NOTHING;
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;
 
--- ── Políticas para public.users ───────────────────────────────────────────────
+-- ── Policies for public.users ───────────────────────────────────────────────
 DROP POLICY IF EXISTS users_select_own ON public.users;
 CREATE POLICY users_select_own ON public.users
   FOR SELECT TO authenticated
@@ -130,7 +130,7 @@ CREATE POLICY users_delete_own ON public.users
   FOR DELETE TO authenticated
   USING ((SELECT auth.uid()) = id);
 
--- ── Políticas para public.tasks ───────────────────────────────────────────────
+-- ── Policies for public.tasks ───────────────────────────────────────────────
 DROP POLICY IF EXISTS tasks_select_own ON public.tasks;
 CREATE POLICY tasks_select_own ON public.tasks
   FOR SELECT TO authenticated
@@ -154,4 +154,4 @@ CREATE POLICY tasks_delete_own ON public.tasks
 
 EOSQL
 
-echo "[db-setup] ✅ Schema público creado correctamente."
+echo "[db-setup] ✅ Public schema created successfully."

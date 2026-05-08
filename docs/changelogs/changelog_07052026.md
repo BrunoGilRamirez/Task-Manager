@@ -118,7 +118,7 @@ MAIL_PORT=$( _cfg "$DOCKER_ENV"               "MAILPIT_UI_PORT" "5435")
 
 ### Added
 
-New top-level section **"Scripts de Gestión del Stack"** placed before _Quick Start_, documenting all three management scripts with:
+New top-level section **"Stack Management Scripts"** placed before _Quick Start_, documenting all three management scripts with:
 
 - Purpose and usage patterns for `config.sh`, `start.sh`, and `stop.sh`.
 - Subsections for `--init` (first-time setup) and `--reset-conf` (reset to defaults) under `config.sh`.

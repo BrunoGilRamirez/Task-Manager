@@ -20,7 +20,7 @@
       <div class="task-card-status">
         <div class="status-badge" [class.status-badge--completed]="isCompleted()">
           <span class="status-icon">{{ isCompleted() ? 'OK' : '...' }}</span>
-          <span class="status-text">{{ isCompleted() ? 'Completada' : 'En progreso' }}</span>
+          <span class="status-text">{{ isCompleted() ? 'Completed' : 'In Progress' }}</span>
         </div>
       </div>
       <div class="task-card-date">
@@ -36,8 +36,8 @@
 
     <!-- Card Footer -->
     <div class="task-card-footer">
-      <button class="btn btn-primary btn-sm" (click)="goToDetails()">Detalles</button>
-      <button class="btn btn-primary btn-sm" (click)="delete(task()?.id!)">Borrar</button>
+      <button class="btn btn-primary btn-sm" (click)="goToDetails()">Details</button>
+      <button class="btn btn-primary btn-sm" (click)="delete(task()?.id!)">Delete</button>
     </div>
   }
 </article>

@@ -209,7 +209,7 @@ export const Constants = {
   },
 } as const;
 
-// Aliases específicos
+// Specific type aliases
 export type User = Tables<"users">;
 export type InsertUser = TablesInsert<"users">;
 export type UpdateUser = TablesUpdate<"users">;

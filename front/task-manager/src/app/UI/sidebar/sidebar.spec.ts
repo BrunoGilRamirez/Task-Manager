@@ -103,7 +103,7 @@ describe('Sidebar', () => {
 
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.task-list-empty')?.textContent).toContain(
-      'No hay tareas para mostrar',
+      'No tasks to display',
     );
   });
 });

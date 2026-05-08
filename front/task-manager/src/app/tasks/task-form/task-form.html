@@ -17,11 +17,11 @@
           <div class="skeleton-button skeleton-button--primary"></div>
         </div>
       } @else {
-        <h2 class="form-title">Editar tarea</h2>
+        <h2 class="form-title">Edit task</h2>
 
         <form class="task-form" [formGroup]="form" (submit)="saveChanges()">
           <div class="form-group">
-            <label for="taskId" class="form-label">ID de la tarea</label>
+            <label for="taskId" class="form-label">Task ID</label>
             <input
               type="text"
               id="taskId"
@@ -30,33 +30,33 @@
               disabled
               aria-readonly="true"
             />
-            <p class="form-hint">El ID de la tarea no puede ser modificado</p>
+            <p class="form-hint">The task ID cannot be modified</p>
           </div>
 
           <div class="form-group">
-            <label for="title" class="form-label required">Titulo</label>
+            <label for="title" class="form-label required">Title</label>
             <input
               type="text"
               id="title"
               class="form-control"
               formControlName="title"
-              placeholder="Ingresa el titulo de la tarea"
+              placeholder="Enter the task title"
             />
           </div>
 
           <div class="form-group">
-            <label for="description" class="form-label">Descripcion</label>
+            <label for="description" class="form-label">Description</label>
             <textarea
               id="description"
               class="form-textarea"
               formControlName="description"
-              placeholder="Ingresa una descripcion detallada de la tarea"
+              placeholder="Enter a detailed description of the task"
               rows="6"
             ></textarea>
           </div>
 
           <div class="form-group">
-            <label for="completed" class="form-label">Estado</label>
+            <label for="completed" class="form-label">Status</label>
             <div class="form-checkbox-group">
               <input
                 type="checkbox"
@@ -64,15 +64,13 @@
                 class="form-checkbox"
                 formControlName="completed"
               />
-              <label for="completed" class="form-checkbox-label">
-                Marcar como completada
-              </label>
+              <label for="completed" class="form-checkbox-label"> Mark as completed </label>
             </div>
           </div>
 
           <div class="form-dates">
             <div class="form-group">
-              <label for="createdAt" class="form-label">Fecha de creacion</label>
+              <label for="createdAt" class="form-label">Created at</label>
               <input
                 type="text"
                 id="createdAt"
@@ -83,7 +81,7 @@
               />
             </div>
             <div class="form-group">
-              <label for="updatedAt" class="form-label">Ultima actualizacion</label>
+              <label for="updatedAt" class="form-label">Last updated</label>
               <input
                 type="text"
                 id="updatedAt"
@@ -96,10 +94,10 @@
           </div>
 
           <div class="form-actions">
-            <button type="button" class="btn btn-secondary" (click)="cancel()">Cancelar</button>
+            <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
 
             <button type="submit" class="btn btn-primary" [disabled]="form.invalid && form.touched">
-              Guardar cambios
+              Save changes
             </button>
           </div>
         </form>

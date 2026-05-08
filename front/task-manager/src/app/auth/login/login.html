@@ -1,6 +1,6 @@
 <div class="auth-container">
   <div class="auth-card">
-    <h2>Iniciar Sesion</h2>
+    <h2>Sign In</h2>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
@@ -15,17 +15,17 @@
         @if (email?.invalid && email?.touched) {
           <div class="error-message">
             @if (email?.errors?.['required']) {
-              <span>El email es requerido</span>
+              <span>Email is required</span>
             }
             @if (email?.errors?.['email']) {
-              <span>Email invalido</span>
+              <span>Invalid email</span>
             }
           </div>
         }
       </div>
 
       <div class="form-group">
-        <label for="password">Contrasena</label>
+        <label for="password">Password</label>
         <input
           id="password"
           type="password"
@@ -36,10 +36,10 @@
         @if (password?.invalid && password?.touched) {
           <div class="error-message">
             @if (password?.errors?.['required']) {
-              <span>La contrasena es requerida</span>
+              <span>Password is required</span>
             }
             @if (password?.errors?.['minlength']) {
-              <span>Minimo 6 caracteres</span>
+              <span>Minimum 6 characters</span>
             }
           </div>
         }
@@ -57,18 +57,22 @@
         </div>
       }
 
-      <button type="submit" class="btn-primary" [disabled]="(loading$ | async) || loginForm.invalid">
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="(loading$ | async) || loginForm.invalid"
+      >
         @if (!(loading$ | async)) {
-          <span>Iniciar Sesion</span>
+          <span>Sign In</span>
         }
         @if (loading$ | async) {
-          <span>Cargando...</span>
+          <span>Loading...</span>
         }
       </button>
 
       <div class="auth-links">
         <a routerLink="/forgot-password">Forgot password?</a>
-        <a routerLink="/auth/register">No tienes cuenta? Registrate</a>
+        <a routerLink="/auth/register">Don't have an account? Sign up</a>
       </div>
     </form>
   </div>

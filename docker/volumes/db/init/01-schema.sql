@@ -4,19 +4,19 @@
 -- Este script se ejecuta una sola vez cuando el contenedor de PostgreSQL
 -- arranca por primera vez (docker-entrypoint-initdb.d).
 --
--- El script 00-init.sh (ejecutado antes) ya creó:
---   • Los roles: anon, authenticated, service_role, authenticator
---   • El schema auth con las funciones auth.uid(), auth.role()
+-- Script 00-init.sh (run before this one) already created:
+--   • The roles: anon, authenticated, service_role, authenticator
+--   • The auth schema with auth.uid(), auth.role() functions
 --
--- Este script crea:
---   • auth.users con TODAS las columnas de la migración inicial de GoTrue
---     (GoTrue la omite con IF NOT EXISTS y sólo añade lo que falte)
---   • Las tablas del dominio público y las políticas RLS.
+-- This script creates:
+--   • auth.users with ALL columns from GoTrue's initial migration
+--     (GoTrue skips it with IF NOT EXISTS and only adds what is missing)
+--   • The public domain tables and RLS policies.
 -- =============================================================================
 
--- ── auth.users ── estructura completa de la migración 00 de GoTrue ──────────
--- GoTrue usa IF NOT EXISTS, así que si encuentra esta tabla la salta y
--- continúa añadiendo columnas y constraints de migraciones posteriores.
+-- ── auth.users ── full structure from GoTrue's migration 00 ────────────────
+-- GoTrue uses IF NOT EXISTS, so if it finds this table it skips it and
+-- continues adding columns and constraints from later migrations.
 CREATE TABLE IF NOT EXISTS auth.users (
   instance_id          uuid         NULL,
   id                   uuid         NOT NULL UNIQUE,
@@ -51,7 +51,7 @@ CREATE INDEX IF NOT EXISTS users_instance_id_idx       ON auth.users USING btree
 SET search_path TO public;
 
 -- =============================================================================
--- Función helper: actualizar updated_at automáticamente
+-- Helper function: auto-update updated_at
 -- =============================================================================
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -62,8 +62,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- =============================================================================
--- Tabla: public.users
--- Perfil de usuario vinculado a auth.users (1-a-1)
+-- Table: public.users
+-- User profile linked to auth.users (1-to-1)
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS public.users (
   id   uuid NOT NULL,
@@ -104,7 +104,7 @@ CREATE TRIGGER update_tasks_updated_at
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;
 
--- ── Políticas para public.users ──────────────────────────────────────────────
+-- ── Policies for public.users ──────────────────────────────────────────────
 
 CREATE POLICY users_select_own ON public.users
   FOR SELECT TO authenticated
@@ -123,7 +123,7 @@ CREATE POLICY users_delete_own ON public.users
   FOR DELETE TO authenticated
   USING ((SELECT auth.uid()) = id);
 
--- ── Políticas para public.tasks ───────────────────────────────────────────────
+-- ── Policies for public.tasks ───────────────────────────────────────────────
 
 CREATE POLICY tasks_select_own ON public.tasks
   FOR SELECT TO authenticated

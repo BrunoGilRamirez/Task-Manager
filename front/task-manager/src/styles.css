@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 /* ====================================== */
-/* VARIABLES GLOBALES - Sistema de Diseño */
+/* GLOBAL VARIABLES - Design System */
 /* ====================================== */
 
 * {
@@ -9,13 +9,11 @@
 }
 
 :root {
-  /* ========== TIPOGRAFÍA ========== */
-  --font-sans: 'Manrope', 'Space Grotesk', system-ui, -apple-system, 'Segoe UI',
-    sans-serif;
-  --font-display: 'Space Grotesk', 'Manrope', system-ui, -apple-system, 'Segoe UI',
-    sans-serif;
+  /* ========== TYPOGRAPHY ========== */
+  --font-sans: 'Manrope', 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Space Grotesk', 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  /* ========== COLORES PRIMARIOS ========== */
+  /* ========== PRIMARY COLORS ========== */
   --color-primary: #4f46e5;
   --color-primary-light: #6366f1;
   --color-primary-dark: #4338ca;
@@ -26,16 +24,16 @@
   --color-secondary-dark: #0891b2;
   --color-secondary-hover: rgba(6, 182, 212, 0.15);
 
-  /* ========== COLORES DE ACENTO ========== */
+  /* ========== ACCENT COLORS ========== */
   --color-accent: #667eea;
   --color-accent-hover: #764ba2;
 
-  /* ========== GRADIENTES ========== */
+  /* ========== GRADIENTS ========== */
   --gradient-primary: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
   --gradient-primary-reverse: linear-gradient(90deg, var(--color-secondary), var(--color-primary));
   --gradient-vertical: linear-gradient(180deg, var(--color-primary), var(--color-accent));
 
-  /* ========== COLORES NEUTRALES ========== */
+  /* ========== NEUTRAL COLORS ========== */
   --color-dark: #0f172a;
   --color-dark-secondary: #1e293b;
   --color-gray-700: #374151;
@@ -53,13 +51,13 @@
   --color-surface-elevated: #f7f8fb;
   --color-bg: #eef1f7;
 
-  /* ========== COLORES DE ESTADO ========== */
+  /* ========== STATE COLORS ========== */
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
   --color-info: #3b82f6;
 
-  /* ========== ESPACIADOS ========== */
+  /* ========== SPACING ========== */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
@@ -68,7 +66,7 @@
   --spacing-2xl: 2.5rem;
   --spacing-3xl: 3rem;
 
-  /* ========== TAMAÑOS DE FUENTE ========== */
+  /* ========== FONT SIZES ========== */
   --font-size-xs: 0.7rem;
   --font-size-sm: 0.75rem;
   --font-size-base: 0.875rem;
@@ -78,7 +76,7 @@
   --font-size-2xl: 1.5rem;
   --font-size-3xl: 2rem;
 
-  /* ========== PESOS DE FUENTE ========== */
+  /* ========== FONT WEIGHTS ========== */
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
@@ -91,18 +89,18 @@
   --radius-xl: 12px;
   --radius-full: 9999px;
 
-  /* ========== SOMBRAS ========== */
+  /* ========== SHADOWS ========== */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
   --shadow-xl: 0 10px 40px rgba(0, 0, 0, 0.1);
 
-  /* ========== TRANSICIONES ========== */
+  /* ========== TRANSITIONS ========== */
   --transition-fast: 0.2s ease;
   --transition-base: 0.3s ease;
   --transition-slow: 0.5s ease;
 
-  /* ========== ALTURA MÍNIMA PARA ACCESIBILIDAD ========== */
+  /* ========== MIN TOUCH HEIGHT FOR ACCESSIBILITY ========== */
   --min-touch-height: 44px;
   --min-touch-height-sm: 36px;
   --min-touch-height-xs: 32px;
@@ -112,8 +110,8 @@
   --page-padding: clamp(1rem, 2.5vw, 2rem);
   --page-gap: clamp(1rem, 2vw, 1.75rem);
 
-  /* ========== BREAKPOINTS (para referencia) ========== */
-  /* Móvil: < 480px */
+  /* ========== BREAKPOINTS (for reference) ========== */
+  /* Mobile: < 480px */
   /* Small Mobile: 480px - 768px */
   /* Tablet: 768px - 1024px */
   /* Desktop: 1024px - 1200px */
@@ -127,16 +125,9 @@ body {
   font-family: var(--font-sans);
   font-size: 16px;
   color: var(--color-dark);
-  background: radial-gradient(
-      120% 120% at 10% 0%,
-      rgba(99, 102, 241, 0.12) 0%,
-      transparent 45%
-    ),
-    radial-gradient(
-      120% 120% at 90% 0%,
-      rgba(6, 182, 212, 0.12) 0%,
-      transparent 45%
-    ),
+  background:
+    radial-gradient(120% 120% at 10% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 45%),
+    radial-gradient(120% 120% at 90% 0%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
     var(--color-bg);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -154,7 +145,7 @@ app-root {
   width: 100%;
 }
 
-/* ====== TIPOGRAFÍA GLOBAL ====== */
+/* ====== GLOBAL TYPOGRAPHY ====== */
 h1,
 h2,
 h3,
@@ -195,7 +186,7 @@ a:hover {
   color: var(--color-primary-dark);
 }
 
-/* ====== BOTONES GLOBALES ====== */
+/* ====== GLOBAL BUTTONS ====== */
 button {
   font-family: inherit;
   font-size: var(--font-size-md);
@@ -217,7 +208,7 @@ select:focus-visible {
   outline-offset: 2px;
 }
 
-/* ====== FORMULARIOS ====== */
+/* ====== FORMS ====== */
 input,
 textarea,
 select {

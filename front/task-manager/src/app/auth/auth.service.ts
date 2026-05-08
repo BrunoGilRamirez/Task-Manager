@@ -2,8 +2,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthChangeEvent, Session, User } from '@supabase/supabase-js';
-import { BehaviorSubject, Observable, from } from 'rxjs';
-import { catchError, finalize, map, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, from, of } from 'rxjs';
+import { catchError, finalize, map, switchMap, tap } from 'rxjs/operators';
 import { apiRoutes } from '../core/api-routes';
 import SupabaseService from '../supabase/supabase.service';
 import { AuthUser, LoginCredentials, RegisterData } from './models/auth.model';
@@ -50,6 +50,22 @@ export class AuthService {
           if (session?.user) {
             this.setCurrentUser(session.user);
           }
+        }),
+        switchMap((session) => {
+          if (!session?.access_token) return of(null);
+          return this.http
+            .get<{
+              success: boolean;
+              data: { name: string };
+            }>(`${apiRoutes.tasksApi}/users/me`, { headers: { Authorization: `Bearer ${session.access_token}` } })
+            .pipe(
+              tap((res) => {
+                if (res?.data?.name) {
+                  this.updateCurrentUserName(res.data.name);
+                }
+              }),
+              catchError(() => of(null)),
+            );
         }),
         finalize(() => {
           this.initializedSubject.next(true);
@@ -126,7 +142,7 @@ export class AuthService {
 
         return {
           success: true,
-          message: 'Cuenta creada exitosamente',
+          message: 'Cuenta creada correctamente',
         };
       }),
       tap(() => this.loadingSubject.next(false)),
@@ -222,7 +238,7 @@ export class AuthService {
       .pipe(
         map((response) => {
           if (!response.success) {
-            throw new Error(response.error || 'No se pudo enviar el enlace de recuperacion');
+            throw new Error(response.error || 'Could not send the recovery link');
           }
           return {
             success: true,
@@ -252,7 +268,7 @@ export class AuthService {
       .pipe(
         map((response) => {
           if (!response.success) {
-            throw new Error(response.error || 'No se pudo actualizar la contrasena');
+            throw new Error(response.error || 'Could not update the password');
           }
           return {
             success: true,

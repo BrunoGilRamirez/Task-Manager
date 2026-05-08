@@ -1,9 +1,9 @@
-// Configuración del frontend cuando se usa el stack local de Docker.
-// Para activarla, copia este contenido en src/app/core/environment.ts
-// (o configura Angular para usar este archivo en el build).
+// Frontend configuration when using the local Docker stack.
+// To enable, copy this content into src/app/core/environment.ts
+// (or configure Angular to use this file in the build).
 //
-// SUPABASE_URL  → http://localhost:54321  (Kong API Gateway del docker-compose)
-// supabaseKey   → ANON_KEY de docker/.env
+// SUPABASE_URL  → http://localhost:54321  (Kong API Gateway from docker-compose)
+// supabaseKey   → ANON_KEY from docker/.env
 
 export const environment = {
   production: false,

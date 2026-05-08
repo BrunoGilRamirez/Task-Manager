@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Reutilizamos el esquema de usuario
+// Reuse the user schema
 export const userSchema = z.object({
   id: z.string(),
   name: z.string().min(1),

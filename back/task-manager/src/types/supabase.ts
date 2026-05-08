@@ -78,7 +78,7 @@ export type Database = {
   };
 };
 
-// ⭐ Agregado - Type helpers útiles
+// ⭐ Added - Useful type helpers
 export type Tables<T extends keyof Database["public"]["Tables"]> =
   Database["public"]["Tables"][T]["Row"];
 
@@ -88,7 +88,7 @@ export type InsertTables<T extends keyof Database["public"]["Tables"]> =
 export type UpdateTables<T extends keyof Database["public"]["Tables"]> =
   Database["public"]["Tables"][T]["Update"];
 
-// Aliases específicos
+// Specific type aliases
 export type User = Tables<"users">;
 export type InsertUser = InsertTables<"users">;
 export type UpdateUser = UpdateTables<"users">;

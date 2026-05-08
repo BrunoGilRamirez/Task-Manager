@@ -15,7 +15,7 @@ const transport = prettyLogs
     }
   : undefined;
 
-// ✅ SOLUCIÓN: Pasar transport dentro de las opciones
+// ✅ FIX: Pass transport inside the options
 export const logger = pino({
   level: logLevel,
   base: { service: "task-manager" },

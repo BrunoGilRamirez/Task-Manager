@@ -2,8 +2,8 @@
   <div class="profile-content">
     <header class="profile-header">
       <div class="profile-title">
-        <h2>Mi perfil</h2>
-        <p>Administra tu información personal y tu sesión</p>
+        <h2>My profile</h2>
+        <p>Manage your personal information and session</p>
       </div>
     </header>
 
@@ -18,7 +18,7 @@
         <app-user-profile-security></app-user-profile-security>
       </div>
       <div class="profile-footer">
-        <button class="btn btn-logout" type="button" (click)="logout()">
+          <button class="btn btn-logout" type="button" (click)="logout()">
           <svg class="btn-logout__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path
               d="M10 12H20M20 12L17 9M20 12L17 15"
@@ -34,13 +34,13 @@
               stroke-linecap="round"
             />
           </svg>
-          Cerrar sesión
+          Sign out
         </button>
       </div>
     } @else {
       <div class="profile-empty">
-        <h3>No hay información disponible</h3>
-        <p>Inicia sesión para ver los detalles de tu perfil.</p>
+        <h3>No information available</h3>
+        <p>Sign in to view your profile details.</p>
       </div>
     }
   </div>

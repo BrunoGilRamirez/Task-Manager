@@ -32,7 +32,7 @@ function normalizeHttpError(error: unknown): NormalizedHttpError {
     const detail = extractDetail(error);
     if (error.status === 0) {
       return {
-        message: 'No hay conexión con el servidor',
+        message: 'Sin conexión al servidor',
         detail,
         status: error.status,
       };
@@ -40,7 +40,7 @@ function normalizeHttpError(error: unknown): NormalizedHttpError {
 
     if (error.status === 401) {
       return {
-        message: 'Tu sesión expiró, inicia sesión nuevamente',
+        message: 'Tu sesión ha expirado. Por favor inicia sesión de nuevo',
         detail,
         status: error.status,
       };
@@ -48,7 +48,7 @@ function normalizeHttpError(error: unknown): NormalizedHttpError {
 
     if (error.status === 403) {
       return {
-        message: 'No tienes permisos para esta acción',
+        message: 'No tienes permiso para realizar esta acción',
         detail,
         status: error.status,
       };
@@ -56,7 +56,7 @@ function normalizeHttpError(error: unknown): NormalizedHttpError {
 
     if (error.status === 404) {
       return {
-        message: 'No encontramos lo que buscabas',
+        message: 'No pudimos encontrar lo que buscabas',
         detail,
         status: error.status,
       };
@@ -64,14 +64,14 @@ function normalizeHttpError(error: unknown): NormalizedHttpError {
 
     if (error.status >= 500) {
       return {
-        message: 'El servidor tuvo un problema, intenta más tarde',
+        message: 'El servidor encontró un problema. Intenta nuevamente más tarde',
         detail,
         status: error.status,
       };
     }
 
     return {
-      message: 'Ocurrió un error en la solicitud',
+      message: 'Ocurrió un error al procesar la solicitud',
       detail,
       status: error.status,
     };
@@ -81,7 +81,7 @@ function normalizeHttpError(error: unknown): NormalizedHttpError {
     return { message: error.message, detail: error.stack };
   }
 
-  return { message: 'Ocurrió un error inesperado' };
+  return { message: 'An unexpected error occurred' };
 }
 
 function extractDetail(error: HttpErrorResponse) {

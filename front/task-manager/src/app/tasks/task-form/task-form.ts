@@ -20,23 +20,23 @@ export class TaskForm {
   // Inputs / Outputs
   task = input.required<Task>();
   showForm = model.required<boolean>();
-  onSave = output<Task>(); // Evento para emitir la tarea editada al padre
+  onSave = output<Task>(); // Event to emit the edited task to the parent
   loading = input<boolean>(false);
 
-  // Formulario Reactivo
+  // Reactive Form
   form: FormGroup;
 
   constructor() {
-    // 2. Inicializar estructura del formulario
+    // 2. Initialize form structure
     this.form = this.fb.group({
       title: ['', Validators.required],
       description: [''],
       completed: [false],
-      // Nota: ID y Fechas no se ponen aquí si son solo lectura,
-      // o se ponen como { value: '', disabled: true }
+      // Note: ID and Dates are not placed here if read-only,
+      // or they can be set as { value: '', disabled: true }
     });
 
-    // 3. Sincronizar: Cuando cambie el input 'task', actualizamos el formulario
+    // 3. Sync: when the 'task' input changes, update the form
     effect(() => {
       const currentTask = this.task();
       if (currentTask) {
@@ -54,7 +54,7 @@ export class TaskForm {
    */
   cancel() {
     this.showForm.set(false);
-    this.form.reset(); // Opcional: limpiar formulario al cancelar
+    this.form.reset(); // Optional: clear form on cancel
   }
 
   /**
@@ -62,19 +62,19 @@ export class TaskForm {
    */
   saveChanges() {
     if (this.form.invalid) {
-      this.form.markAllAsTouched(); // Mostrar errores si faltan campos
+      this.form.markAllAsTouched(); // Show errors if required fields are missing
       return;
     }
 
-    // 4. Combinar la tarea original con los cambios del formulario
+    // 4. Merge original task with form changes
     const updatedTask: Task = {
-      ...this.task(), // Mantiene ID y fechas originales
-      ...this.form.value, // Sobrescribe título, descripción y estado
+      ...this.task(), // Keeps original ID and dates
+      ...this.form.value, // Overwrites title, description and status
     };
 
-    console.log('Guardando cambios:', updatedTask);
+    console.log('Saving changes:', updatedTask);
 
-    // Emitir la tarea actualizada
+    // Emit the updated task
     this.onSave.emit(updatedTask);
     this.showForm.set(false);
   }

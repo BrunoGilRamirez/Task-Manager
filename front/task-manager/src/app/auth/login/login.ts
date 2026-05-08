@@ -53,12 +53,12 @@ export class LoginComponent {
       },
       error: (error) => {
         console.error('Login error:', error);
-        this.errorMessage = error.message || 'Error al iniciar sesión';
+        this.errorMessage = error.message || 'Error signing in';
       },
     });
   }
 
-  // Getters para validación en template
+  // Getters for template validation
   /**
    * Exposes the email control for template validation state.
    */

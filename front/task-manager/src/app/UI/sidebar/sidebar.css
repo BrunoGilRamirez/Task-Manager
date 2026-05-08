@@ -17,7 +17,7 @@
   box-sizing: border-box;
 }
 
-/* 2. Cabecera y Títulos */
+/* 2. Header and Titles */
 .sidebar-header {
   padding: var(--spacing-lg);
   border-bottom: 1px solid var(--color-border);
@@ -236,7 +236,7 @@
 /* Mobile Small (< 480px) */
 @media screen and (max-width: 480px) {
   .sidebar {
-    width: 85vw; /* Casi todo el ancho en móviles pequeños */
+    width: 85vw; /* Almost full width on small mobile */
   }
 
   .filter-group {

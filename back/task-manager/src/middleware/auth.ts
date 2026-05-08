@@ -34,7 +34,7 @@ export async function authenticateUser(
       return;
     }
 
-    // Agregar usuario al request (MISMA ESTRUCTURA)
+    // Add user to request (SAME STRUCTURE)
     req.user = {
       sub: user.id,
       email: user.email,

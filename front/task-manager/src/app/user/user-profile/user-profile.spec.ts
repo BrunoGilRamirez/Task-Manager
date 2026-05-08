@@ -15,6 +15,7 @@ describe('UserProfile', () => {
       name: 'User Test',
     }),
     signOut: vi.fn().mockReturnValue(of(void 0)),
+    updateCurrentUserName: vi.fn(),
   };
   const userServiceStub = {
     updateProfile: vi.fn().mockReturnValue(of({ id: 'u1', name: 'Updated' })),
@@ -56,9 +57,7 @@ describe('UserProfile', () => {
 
   it('should handle updateProfile errors', () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    userServiceStub.updateProfile.mockReturnValueOnce(
-      throwError(() => new Error('boom')),
-    );
+    userServiceStub.updateProfile.mockReturnValueOnce(throwError(() => new Error('boom')));
 
     component.handleSave({ name: 'Any' });
 

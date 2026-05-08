@@ -1,5 +1,5 @@
 /* ====================================== */
-/* REGISTER COMPONENT - Estilos de Formulario */
+/* REGISTER COMPONENT - Form Styles */
 /* ====================================== */
 
 :host {
@@ -8,7 +8,7 @@
   min-height: 100vh;
 }
 
-/* ========== CONTENEDOR PRINCIPAL ========== */
+/* ========== MAIN CONTAINER ========== */
 .auth-container {
   display: flex;
   justify-content: center;
@@ -19,7 +19,7 @@
   background-attachment: fixed;
 }
 
-/* ========== TARJETA DE AUTENTICACIÓN ========== */
+/* ========== AUTH CARD ========== */
 .auth-card {
   width: 100%;
   max-width: 450px;
@@ -51,14 +51,14 @@
   font-weight: var(--font-weight-bold);
 }
 
-/* ========== FORMULARIO ========== */
+/* ========== FORM ========== */
 form {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
 }
 
-/* ========== GRUPOS DE FORMULARIO ========== */
+/* ========== FORM GROUPS ========== */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -72,7 +72,7 @@ form {
   letter-spacing: 0.3px;
 }
 
-/* ========== INPUTS Y TEXTAREAS ========== */
+/* ========== INPUTS AND TEXTAREAS ========== */
 .form-group input {
   padding: var(--spacing-md) var(--spacing-md);
   font-size: var(--font-size-md);
@@ -98,7 +98,7 @@ form {
   border-color: var(--color-gray-400);
 }
 
-/* ========== ESTADO INVÁLIDO ========== */
+/* ========== INVALID STATE ========== */
 .form-group input.invalid {
   border-color: var(--color-error);
   background-color: rgba(239, 68, 68, 0.02);
@@ -109,7 +109,7 @@ form {
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
-/* ========== MENSAJES DE VALIDACIÓN ========== */
+/* ========== VALIDATION MESSAGES ========== */
 .error-message {
   font-size: var(--font-size-sm);
   color: var(--color-error);
@@ -149,7 +149,7 @@ form {
   }
 }
 
-/* ========== BOTONES ========== */
+/* ========== BUTTONS ========== */
 .btn-primary {
   padding: var(--spacing-md) var(--spacing-lg);
   font-size: var(--font-size-md);
@@ -189,7 +189,7 @@ form {
   outline-offset: 2px;
 }
 
-/* ========== ENLACES DE NAVEGACIÓN ========== */
+/* ========== NAVIGATION LINKS ========== */
 .auth-links {
   display: flex;
   flex-direction: column;
@@ -352,7 +352,7 @@ form {
   }
 }
 
-/* Focus visible para navegación por teclado */
+/* Focus visible for keyboard navigation */
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;

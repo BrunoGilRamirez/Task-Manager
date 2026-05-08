@@ -36,7 +36,7 @@ export class RegisterComponent {
     );
   }
 
-  // Validador personalizado para confirmar contraseña
+  // Custom validator to confirm password
   /**
    * Ensures `password` and `confirmPassword` fields match.
    */
@@ -70,8 +70,12 @@ export class RegisterComponent {
       next: (response) => {
         this.successMessage = response.message;
 
-        // Si no requiere confirmación, redirigir automáticamente
-        if (response.message.includes('exitosamente')) {
+        // If no confirmation is required, redirect automatically
+        if (
+          response.message.includes('created') ||
+          response.message.includes('created successfully') ||
+          response.message.includes('Cuenta creada')
+        ) {
           setTimeout(() => {
             this.router.navigate(['/tasks']);
           }, 2000);
@@ -79,12 +83,12 @@ export class RegisterComponent {
       },
       error: (error) => {
         console.error('Register error:', error);
-        this.errorMessage = error.message || 'Error al crear la cuenta';
+        this.errorMessage = error.message || 'Error creating account';
       },
     });
   }
 
-  // Getters para validación
+  // Getters for validation
   /**
    * Exposes the name control for template validation state.
    */

@@ -1,14 +1,14 @@
 <article class="profile-card">
-  <h3 class="card-title">Información personal</h3>
+  <h3 class="card-title">Personal information</h3>
   <form class="profile-form" [formGroup]="form" (submit)="saveChanges()">
     <div class="form-group">
-      <label class="form-label required" for="profile-name">Nombre</label>
+      <label class="form-label required" for="profile-name">Name</label>
       <input
         id="profile-name"
         class="form-input"
         type="text"
         formControlName="name"
-        placeholder="Tu nombre"
+        placeholder="Your name"
       />
     </div>
     <div class="form-group">
@@ -18,14 +18,14 @@
         class="form-input form-input--disabled"
         type="email"
         formControlName="email"
-        placeholder="tu@email.com"
+        placeholder="you@example.com"
       />
-      <p class="form-hint">El email se gestiona desde tu proveedor de autenticación.</p>
+      <p class="form-hint">Email is managed by your authentication provider.</p>
     </div>
     <div class="form-actions">
-      <button class="btn btn-secondary" type="button" (click)="cancel()">Cancelar</button>
+      <button class="btn btn-secondary" type="button" (click)="cancel()">Cancel</button>
       <button type="submit" class="btn btn-primary" [disabled]="form.invalid && form.touched">
-        Guardar
+        Save
       </button>
     </div>
   </form>

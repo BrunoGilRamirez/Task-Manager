@@ -19,7 +19,7 @@
   background-attachment: fixed;
 }
 
-/* ========== TARJETA DE AUTENTICACIÓN ========== */
+/* ========== AUTH CARD ========== */
 .auth-card {
   width: 100%;
   max-width: 400px;
@@ -96,7 +96,7 @@ form {
   border-color: var(--color-gray-400);
 }
 
-/* ========== ESTADO INVÁLIDO ========== */
+/* ========== INVALID STATE ========== */
 .form-group input.invalid {
   border-color: var(--color-error);
   background-color: rgba(239, 68, 68, 0.02);
@@ -186,7 +186,7 @@ form {
   outline-offset: 2px;
 }
 
-/* ========== ENLACES DE NAVEGACIÓN ========== */
+/* ========== NAVIGATION LINKS ========== */
 .auth-links {
   display: flex;
   flex-direction: column;
@@ -321,7 +321,7 @@ form {
   }
 }
 
-/* Focus visible para navegación por teclado */
+/* Focus visible for keyboard navigation */
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;

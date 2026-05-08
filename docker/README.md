@@ -1,114 +1,114 @@
 # Supabase Local – Docker
 
-Este directorio contiene el stack de Docker que reemplaza al proyecto remoto de Supabase, permitiendo correr el Task Manager completamente en local.
+This directory contains the local Docker stack that replaces the remote Supabase project, allowing the Task Manager to run entirely locally.
 
-## Servicios
+## Services
 
-| Servicio   | Imagen                          | Puerto local | Descripción                          |
-|------------|---------------------------------|-------------|--------------------------------------|
-| `db`       | `supabase/postgres:15.8.1.060`  | `54322`     | PostgreSQL con schema auth incluido  |
-| `auth`     | `supabase/gotrue:v2.170.0`      | interno     | Autenticación JWT (GoTrue)           |
-| `rest`     | `postgrest/postgrest:v12.2.3`   | interno     | REST API de la base de datos         |
-| `kong`     | `kong:2.8.1`                    | `54321`     | API Gateway (mismo puerto que CLI)   |
-| `mail`     | `axllent/mailpit:latest`        | `54324`     | UI de emails (reset de contraseña)   |
+| Service | Image                          | Local port | Description                                 |
+| ------- | ------------------------------ | ---------- | ------------------------------------------- |
+| `db`    | `supabase/postgres:15.8.1.060` | `54322`    | PostgreSQL with the `auth` schema included  |
+| `auth`  | `supabase/gotrue:v2.170.0`     | internal   | JWT authentication (GoTrue)                 |
+| `rest`  | `postgrest/postgrest:v12.2.3`  | internal   | REST API for the database                   |
+| `kong`  | `kong:2.8.1`                   | `54321`    | API Gateway (same port as the Supabase CLI) |
+| `mail`  | `axllent/mailpit:latest`       | `54324`    | Email UI (password reset capture)           |
 
-## Inicio rápido
+## Quick Start
 
-### 1. Copia y ajusta las variables de entorno
+### 1. Copy and adjust environment variables
 
 ```bash
 cp docker/.env.example docker/.env
 ```
 
-Edita `docker/.env` y cambia al menos `POSTGRES_PASSWORD`.  
-Si cambias `JWT_SECRET` también debes regenerar los JWT keys:
+Edit `docker/.env` and change at least `POSTGRES_PASSWORD`.  
+If you change `JWT_SECRET` you should also regenerate the JWT keys:
 
 ```bash
-node docker/generate-jwt-keys.mjs "tu-nuevo-secret-de-32-caracteres-o-mas"
+node docker/generate-jwt-keys.mjs "your-new-32+chars-secret"
 ```
 
-### 2. Levanta el stack
+### 2. Bring up the stack
 
 ```bash
-# Desde la raíz del proyecto
+# From the repository root
 docker compose --env-file docker/.env up -d
 ```
 
-### 3. Configura el backend
+### 3. Configure the backend
 
-Crea/edita `back/task-manager/.env`:
+Create or edit `back/task-manager/.env`:
 
 ```env
 PORT=3000
 NODE_ENV=development
 
 SUPABASE_URL=http://localhost:54321
-SUPABASE_PUBLISHABLE_KEY=<valor de ANON_KEY en docker/.env>
+SUPABASE_PUBLISHABLE_KEY=<ANON_KEY from docker/.env>
 FRONTEND_RESET_PASSWORD_URL=http://localhost:4200/reset-password
 ```
 
-### 4. Configura el frontend
+### 4. Configure the frontend
 
-Edita `front/task-manager/src/app/core/environment.ts`:
+Edit `front/task-manager/src/app/core/environment.ts`:
 
 ```typescript
 export const environment = {
   production: false,
-  supabaseUrl: 'http://localhost:54321',
-  supabaseKey: '<valor de ANON_KEY en docker/.env>',
-  backendUrl: 'http://localhost:3000',
+  supabaseUrl: "http://localhost:54321",
+  supabaseKey: "<ANON_KEY from docker/.env>",
+  backendUrl: "http://localhost:3000",
 };
 ```
 
-### 5. Verifica que todo esté corriendo
+### 5. Verify the services are running
 
 ```bash
-# API Gateway (debe devolver 404 o respuesta de Kong)
+# API Gateway (should return 404 or Kong response)
 curl http://localhost:54321
 
-# Auth (debe devolver {"version":"..."})
+# Auth (should return {"version":"..."})
 curl http://localhost:54321/auth/v1/health
 
-# REST API (debe devolver el schema público)
+# REST API (should return the public schema)
 curl http://localhost:54321/rest/v1/
 
-# Base de datos directa
+# Direct DB access
 psql -h localhost -p 54322 -U postgres -d postgres
 ```
 
-### 6. Ver emails de prueba (reset de contraseña)
+### 6. View test emails (password reset)
 
-Abre **http://localhost:54324** en el navegador. Mailpit captura todos los emails enviados por GoTrue.
+Open **http://localhost:54324** in your browser. Mailpit captures all emails sent by GoTrue.
 
-## Detener y limpiar
+## Stop and cleanup
 
 ```bash
-# Solo detener (mantiene los datos)
+# Stop only (preserve data)
 docker compose --env-file docker/.env down
 
-# Detener y borrar todos los datos (volumen db-data)
+# Stop and remove all data (db-data volume)
 docker compose --env-file docker/.env down -v
 ```
 
-## Estructura de archivos
+## File structure
 
 ```
 docker/
-  .env.example              Variables de entorno (copiar a .env)
-  .env                      Variables activas (NO commitear)
-  generate-jwt-keys.mjs     Script para regenerar JWT keys
-  README.md                 Este archivo
+  .env.example              Environment variables (copy to .env)
+  .env                      Active variables (DO NOT commit)
+  generate-jwt-keys.mjs     Script to regenerate JWT keys
+  README.md                 This file
   volumes/
     db/
       init/
-        01-schema.sql       Tablas públicas + RLS (se ejecuta al crear el contenedor)
+        01-schema.sql       Public tables + RLS (runs when the container is created)
     kong/
-      kong.yml              Rutas del API Gateway
+      kong.yml              API Gateway routes
 ```
 
-## Notas
+## Notes
 
-- Los datos de PostgreSQL se persisten en el volumen Docker `db-data`. Si borras el proyecto con `docker compose down -v`, perderás todos los datos.
-- La imagen `supabase/postgres` ya incluye el schema `auth` (tablas de GoTrue, roles, funciones `auth.uid()`, etc.). No necesitas crearlo manualmente.
-- `ENABLE_EMAIL_AUTOCONFIRM=true` evita que los nuevos usuarios tengan que verificar su email. Cambia a `false` para probar el flujo completo de verificación.
-- Los JWT keys incluidos en `.env.example` son solo para desarrollo local. **Nunca los uses en producción.**
+- PostgreSQL data is persisted in the Docker volume `db-data`. If you remove the project with `docker compose down -v`, you will lose all data.
+- The `supabase/postgres` image already includes the `auth` schema (GoTrue tables, roles, `auth.uid()` helpers, etc.). You don't need to create it manually.
+- Setting `ENABLE_EMAIL_AUTOCONFIRM=true` will skip email verification for new users. Set it to `false` to test the full confirmation flow.
+- The JWT keys included in `.env.example` are for local development only. **Never use them in production.**

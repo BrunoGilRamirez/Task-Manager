@@ -231,6 +231,15 @@ export class TaskService {
   }
 
   /**
+   * Inserts or replaces a task in the in-memory store.
+   *
+   * Useful for optimistic updates from outside the service.
+   */
+  updateTaskInStore(task: Task) {
+    this.upsertTask(task);
+  }
+
+  /**
    * Removes a task from the in-memory list.
    */
   removeTaskFromStore(id: number) {

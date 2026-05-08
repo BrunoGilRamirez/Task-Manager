@@ -6,8 +6,7 @@ export class GlobalErrorHandler implements ErrorHandler {
   constructor(private readonly errorService: ErrorService) {}
 
   handleError(error: unknown): void {
-    const message =
-      error instanceof Error ? error.message : 'Ocurrió un error inesperado';
+    const message = error instanceof Error ? error.message : 'An unexpected error occurred';
 
     const detail = error instanceof Error ? error.stack : undefined;
 

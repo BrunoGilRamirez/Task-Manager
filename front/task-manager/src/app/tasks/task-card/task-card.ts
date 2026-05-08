@@ -1,6 +1,7 @@
 import { Component, inject, input, output } from '@angular/core';
 import { Task } from '../models/task.model';
 import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
 import { TaskService } from '../service/task-service';
 
 /**
@@ -17,6 +18,8 @@ export class TaskCard {
   task = input<Task | null>(null);
   loading = input<boolean>(false);
   delete_ = output<number>();
+
+  private router = inject(Router);
 
   /**
    * Returns completion state for template binding.
@@ -53,7 +56,7 @@ export class TaskCard {
     if (!task) {
       return;
     }
-    window.location.href = '/tasks/details/' + task.id;
+    this.router.navigate(['/tasks/details', task.id]);
   }
 
   /**

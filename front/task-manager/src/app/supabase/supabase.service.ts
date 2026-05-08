@@ -23,7 +23,7 @@ export class SupabaseService {
     });
   }
 
-  // Getter público para acceder al cliente (si lo necesitas)
+  // Public getter to access the client (if needed)
   /**
    * Returns the shared Supabase client instance.
    */

@@ -18,7 +18,7 @@ export const routes: Routes = [
   },
   {
     path: 'auth',
-    canActivate: [guestGuard], // Solo accesible si NO está autenticado
+    canActivate: [guestGuard], // Only accessible when NOT authenticated
     children: [
       { path: 'login', component: LoginComponent },
       { path: 'register', component: RegisterComponent },
@@ -41,16 +41,16 @@ export const routes: Routes = [
   {
     path: 'home',
     component: Home,
-    canActivate: [authGuard], // Solo accesible si está autenticado
+    canActivate: [authGuard], // Only accessible when authenticated
   },
   {
     path: 'me',
     component: UserProfile,
-    canActivate: [authGuard], // Solo accesible si está autenticado
+    canActivate: [authGuard], // Only accessible when authenticated
   },
   {
     path: 'tasks',
-    canActivate: [authGuard], // Solo accesible si está autenticado
+    canActivate: [authGuard], // Only accessible when authenticated
     children: [
       { path: '', component: TasksContainer },
       { path: 'details/:id', component: TaskDetails },

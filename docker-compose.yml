@@ -3,15 +3,15 @@ version: "3.8"
 # =============================================================================
 # Supabase Local Stack – Task Manager
 #
-# Servicios:
-#   db      → PostgreSQL (con auth schema pre-configurado)
-#   auth    → GoTrue  (autenticación JWT)
-#   rest    → PostgREST (API REST de la base de datos)
-#   kong    → API Gateway (expuesto en :54321, igual que Supabase CLI)
-#   mail    → Mailpit  (captura emails de reset de contraseña)
+# Services:
+#   db      → PostgreSQL (with pre-configured auth schema)
+#   auth    → GoTrue  (JWT authentication)
+#   rest    → PostgREST (database REST API)
+#   kong    → API Gateway (exposed on :54321, same as Supabase CLI)
+#   mail    → Mailpit  (captures password reset emails)
 #
-# Uso:
-#   cp docker/.env.example docker/.env   # ajusta POSTGRES_PASSWORD al menos
+# Usage:
+#   cp docker/.env.example docker/.env   # adjust POSTGRES_PASSWORD at minimum
 #   docker compose --env-file docker/.env up -d
 # =============================================================================
 
@@ -101,7 +101,7 @@ services:
       retries: 10
       start_period: 30s
 
-  # ── 2b. db-setup – crea tablas públicas + RLS después de que auth migre ───
+  # ── 2b. db-setup – creates public tables + RLS after auth has migrated ───
   db-setup:
     build:
       context: ./docker/volumes/db-setup
@@ -151,12 +151,12 @@ services:
       KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
       KONG_NGINX_PROXY_PROXY_BUFFERS: 64 160k
 
-  # ── 5. Mailpit (captura de correos locales) ───────────────────────────────
+  # ── 5. Mailpit (captures local emails) ─────────────────────────────────
   mail:
     image: axllent/mailpit:latest
     restart: unless-stopped
     ports:
-      - "${MAILPIT_UI_PORT:-54324}:8025" # UI web para ver emails
+      - "${MAILPIT_UI_PORT:-54324}:8025" # web UI to view captured emails
 
 volumes:
   db-data:

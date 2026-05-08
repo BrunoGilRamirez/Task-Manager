@@ -1,6 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { TaskService } from '../service/task-service';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Task } from '../models/task.model';
 import { DatePipe } from '@angular/common';
 import { Sidebar } from '../../UI/sidebar/sidebar';
@@ -34,6 +34,8 @@ export class TaskDetails {
   private router = inject(Router);
 
   private route = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
+
   task$ = this.route.paramMap.pipe(
     map((params) => Number(params.get('id'))),
     tap(() => {
@@ -42,7 +44,11 @@ export class TaskDetails {
     }),
     switchMap((id) => this.taskService.getTask(id).pipe(finalize(() => this.loading.set(false)))),
   );
-  task = toSignal(this.task$, { initialValue: {} as Task });
+  task = signal<Task>({} as Task);
+
+  constructor() {
+    this.task$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((t) => this.task.set(t));
+  }
   /**
    * Navigates back to the task list.
    */
@@ -51,11 +57,20 @@ export class TaskDetails {
   }
 
   /**
-   * Toggles completion and persists the update.
+   * Toggles completion with optimistic update and rollback on error.
    */
   toggleComplete() {
-    this.task().completed = !this.task().completed;
-    this.taskService.updateTask(this.task().id, this.task()).subscribe();
+    const previousTask = this.task();
+    const previousTasks = this.taskService.getTasksSnapshot();
+    const updated: Task = { ...previousTask, completed: !previousTask.completed };
+    this.task.set(updated);
+    this.taskService.updateTaskInStore(updated);
+    this.taskService.updateTask(updated.id, updated).subscribe({
+      error: () => {
+        this.task.set(previousTask);
+        this.taskService.restoreTasks(previousTasks);
+      },
+    });
   }
 
   /**
@@ -112,10 +127,20 @@ export class TaskDetails {
     this.showForm.set(true);
   }
   /**
-   * Persists edited task fields and closes the form.
+   * Persists edited task fields with optimistic update and rollback on error.
    */
   updateTask(task: Task) {
-    this.taskService.updateTask(this.task().id, task).subscribe();
+    const previousTask = this.task();
+    const previousTasks = this.taskService.getTasksSnapshot();
+    this.task.set(task);
+    this.taskService.updateTaskInStore(task);
     this.showForm.set(false);
+    this.taskService.updateTask(previousTask.id, task).subscribe({
+      error: () => {
+        this.task.set(previousTask);
+        this.taskService.restoreTasks(previousTasks);
+        this.showForm.set(true);
+      },
+    });
   }
 }

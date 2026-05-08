@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # =============================================================================
-# Fase 1 – Roles de Supabase en PostgreSQL estándar
+# Phase 1 – Supabase roles in standard PostgreSQL
 #
-# Solo crea los roles y el schema auth vacío.
-# GoTrue creará todas las tablas y funciones de auth al arrancar.
-# Las tablas del dominio público (users, tasks) las crea el servicio db-setup
-# una vez que GoTrue haya terminado sus migraciones.
+# Only creates the roles and the empty auth schema.
+# GoTrue will create all auth tables and functions on startup.
+# The public domain tables (users, tasks) are created by the db-setup service
+# once GoTrue has finished its migrations.
 # =============================================================================
 set -euo pipefail
 
@@ -64,7 +64,7 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
   ALTER DATABASE postgres SET "app.settings.jwt_secret" TO '$JWT_SECRET';
   ALTER DATABASE postgres SET "app.settings.jwt_exp"    TO '$JWT_EXP';
 
-  -- ── Schema auth vacío (GoTrue lo puebla completo con sus migraciones) ─────
+  -- ── Empty auth schema (GoTrue fully populates it with its migrations) ─────
   CREATE SCHEMA IF NOT EXISTS auth;
   ALTER SCHEMA auth OWNER TO supabase_auth_admin;
   GRANT ALL PRIVILEGES ON SCHEMA auth   TO supabase_auth_admin;

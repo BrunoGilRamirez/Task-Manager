@@ -12,7 +12,7 @@ _format_version: "1.1"
 # =============================================================================
 
 services:
-  # ── GoTrue (Autenticación) ─────────────────────────────────────────────────
+  # ── GoTrue (Authentication) ─────────────────────────────────────────────────
   - name: auth-v1
     _comment: "GoTrue: sign-in, sign-up, forgot-password, reset-password"
     url: http://auth:9999/

@@ -1,4 +1,4 @@
-<button class="hamburger" type="button" aria-label="Abrir menú" (click)="toggleSidebar()">
+<button class="hamburger" type="button" aria-label="Open menu" (click)="toggleSidebar()">
   <span class="line"></span>
   <span class="line"></span>
   <span class="line"></span>
@@ -14,8 +14,8 @@
 <aside class="sidebar" [class.open]="isOpen()">
   <!-- Sidebar Header -->
   <div class="sidebar-header">
-    <h3>Filtros</h3>
-    <button class="sidebar-close" type="button" aria-label="Cerrar menú" (click)="closeSidebar()">
+    <h3>Filters</h3>
+    <button class="sidebar-close" type="button" aria-label="Close menu" (click)="closeSidebar()">
       &times;
     </button>
   </div>
@@ -30,7 +30,7 @@
           (click)="filterByStatus('all')"
         >
           <span class="filter-icon">●</span>
-          Todas
+          All
           <span class="filter-count">{{ totalCount() }}</span>
         </button>
         <button
@@ -39,7 +39,7 @@
           (click)="filterByStatus('pending')"
         >
           <span class="filter-icon pending">●</span>
-          En progreso
+          In Progress
           <span class="filter-count">{{ pendingCount() }}</span>
         </button>
         <button
@@ -48,7 +48,7 @@
           (click)="filterByStatus('completed')"
         >
           <span class="filter-icon completed">●</span>
-          Completadas
+          Completed
           <span class="filter-count">{{ completedCount() }}</span>
         </button>
       </div>
@@ -56,10 +56,10 @@
   } @else {
     <!-- Task List (for details view) -->
     <div class="task-list-sidebar">
-      <h4 class="task-list-title">Todas las tareas</h4>
+      <h4 class="task-list-title">All tasks</h4>
       <div class="task-list-items">
         @if (tasks().length === 0) {
-          <p class="task-list-empty">No hay tareas para mostrar</p>
+          <p class="task-list-empty">No tasks to display</p>
         } @else {
           @for (task of tasks(); track task.id) {
             <button class="task-item" (click)="navigateToTask(task.id)">

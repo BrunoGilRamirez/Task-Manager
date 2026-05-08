@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 # =============================================================================
-# stop.sh – Detiene el stack completo de Task Manager
+# stop.sh – Stops the full Task Manager stack
 #
-# Uso:
-#   bash stop.sh           # detiene procesos Node + contenedores Docker
-#   bash stop.sh --docker  # detiene solo los contenedores Docker
-#   bash stop.sh --prune   # detiene Docker y elimina volúmenes (reset DB)
+# Usage:
+#   bash stop.sh           # stops Node processes + Docker containers
+#   bash stop.sh --docker  # stops only Docker containers
+#   bash stop.sh --prune   # stops Docker and removes volumes (DB reset)
 # =============================================================================
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOCKER_ENV="$SCRIPT_DIR/docker/.env"
 
-# ── Leer puertos desde config (con fallback) ──────────────────────────
+# ── Read ports from config (with fallback) ──────────────────────────
 _cfg() {
   local file="$1" key="$2" default="$3"
   if [[ -f "$file" ]]; then
@@ -38,12 +38,12 @@ log_step()  { echo -e "\n${BOLD}━━━ $* ━━━${RESET}"; }
 MODE="${1:-}"
 
 # =============================================================================
-# Helper: matar todos los PIDs que escuchan en un puerto TCP (Windows-safe)
-# Usa netstat + taskkill (disponible en Git Bash vía Windows)
+# Helper: kill all PIDs listening on a TCP port (Windows-safe)
+# Uses netstat + taskkill (available in Git Bash on Windows)
 # =============================================================================
 kill_port() {
   local PORT="$1"
-  # netstat en Windows lista líneas con "TCP  0.0.0.0:PORT" o "[::]"
+  # On Windows, netstat lists lines with "TCP  0.0.0.0:PORT" or "[::]"
   local PIDS
   PIDS=$(netstat -ano 2>/dev/null \
     | grep -E "[:.]${PORT}[[:space:]].*LISTENING" \
@@ -54,7 +54,7 @@ kill_port() {
     while IFS= read -r PID; do
       [[ "$PID" =~ ^[0-9]+$ ]] || continue
       taskkill //PID "$PID" //F &>/dev/null 2>&1 || true
-      log_ok "Puerto $PORT liberado (PID $PID)"
+      log_ok "Port $PORT freed (PID $PID)"
     done <<< "$PIDS"
     return 0
   fi
@@ -62,16 +62,16 @@ kill_port() {
 }
 
 # =============================================================================
-# 1. Procesos Node (backend nodemon + frontend ng serve)
+# 1. Node processes (backend nodemon + frontend ng serve)
 # =============================================================================
 if [[ "$MODE" != "--docker" && "$MODE" != "--prune" ]]; then
-  log_step "Procesos Node"
+  log_step "Node processes"
 
   KILLED=0
 
-  # Matar por nombre de proceso (funciona en Git Bash vía taskkill)
+  # Kill by process name (works in Git Bash via taskkill)
   if taskkill //F //IM node.exe &>/dev/null 2>&1; then
-    log_ok "Procesos node.exe detenidos."
+    log_ok "node.exe processes stopped."
     KILLED=1
   fi
 
@@ -82,28 +82,28 @@ if [[ "$MODE" != "--docker" && "$MODE" != "--prune" ]]; then
     fi
   done
 
-  [[ $KILLED -eq 0 ]] && log_info "No había procesos Node corriendo."
+  [[ $KILLED -eq 0 ]] && log_info "No Node processes were running."
 fi
 
 # =============================================================================
-# 2. Contenedores Docker
+# 2. Docker containers
 # =============================================================================
-log_step "Docker – contenedores"
+log_step "Docker – containers"
 
 if ! command -v docker &>/dev/null; then
-  log_warn "Docker no está disponible en el PATH. Saltando."
+  log_warn "Docker is not available in PATH. Skipping."
 else
   cd "$SCRIPT_DIR"
 
   if [[ "$MODE" == "--prune" ]]; then
-    log_warn "Modo --prune: se eliminarán los volúmenes (¡se borrará la base de datos!)."
+    log_warn "--prune mode: volumes will be removed (database will be erased!)."
     docker compose --env-file "$DOCKER_ENV" down -v 2>&1 \
       | grep -v "^time=\|level=warning" || true
-    log_ok "Contenedores y volúmenes eliminados."
+    log_ok "Containers and volumes removed."
   else
     docker compose --env-file "$DOCKER_ENV" down 2>&1 \
       | grep -v "^time=\|level=warning" || true
-    log_ok "Contenedores detenidos (volúmenes conservados)."
+    log_ok "Containers stopped (volumes preserved)."
   fi
 fi
 
@@ -112,10 +112,10 @@ fi
 # =============================================================================
 echo ""
 echo -e "${BOLD}${RED}╔══════════════════════════════════════╗${RESET}"
-echo -e "${BOLD}${RED}║   🛑  Task Manager detenido          ║${RESET}"
+echo -e "${BOLD}${RED}║   🛑  Task Manager stopped           ║${RESET}"
 echo -e "${BOLD}${RED}╚══════════════════════════════════════╝${RESET}"
 if [[ "$MODE" == "--prune" ]]; then
-  echo -e "${YELLOW}  Volúmenes eliminados – la DB quedó en blanco.${RESET}"
-  echo -e "${YELLOW}  Para reiniciar limpio: bash start.sh${RESET}"
+  echo -e "${YELLOW}  Volumes removed – the database has been reset.${RESET}"
+  echo -e "${YELLOW}  To start clean: bash start.sh${RESET}"
 fi
 echo ""

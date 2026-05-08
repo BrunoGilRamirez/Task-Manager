@@ -2,8 +2,8 @@
   <div class="home-content">
     <!-- Welcome Section -->
     <div class="welcome-section">
-      <h1 class="welcome-title">Panel de Control</h1>
-      <p class="welcome-subtitle">Resumen de tus tareas</p>
+      <h1 class="welcome-title">Dashboard</h1>
+      <p class="welcome-subtitle">Overview of your tasks</p>
     </div>
 
     <!-- Stats Grid -->
@@ -11,49 +11,49 @@
       <!-- Completed Tasks Card -->
       <article class="stat-card stat-card--success">
         <div class="stat-header">
-          <h2 class="stat-title">Tareas Completadas</h2>
+          <h2 class="stat-title">Completed Tasks</h2>
           <div class="stat-icon">✓</div>
         </div>
         <div class="stat-value">{{ completedCount() }}</div>
-        <p class="stat-label">Tareas finalizadas</p>
+        <p class="stat-label">Completed tasks</p>
       </article>
 
       <!-- In Progress Tasks Card -->
       <article class="stat-card stat-card--warning">
         <div class="stat-header">
-          <h2 class="stat-title">Tareas en Progreso</h2>
+          <h2 class="stat-title">Tasks In Progress</h2>
           <div class="stat-icon">⏳</div>
         </div>
         <div class="stat-value">{{ inProgressCount() }}</div>
-        <p class="stat-label">Tareas pendientes</p>
+        <p class="stat-label">Pending tasks</p>
       </article>
 
       <!-- Total Tasks Card -->
       <article class="stat-card stat-card--info">
         <div class="stat-header">
-          <h2 class="stat-title">Total de Tareas</h2>
+          <h2 class="stat-title">Total Tasks</h2>
           <div class="stat-icon">📋</div>
         </div>
         <div class="stat-value">{{ totalCount() }}</div>
-        <p class="stat-label">Todas tus tareas</p>
+        <p class="stat-label">All tasks</p>
       </article>
     </div>
 
     <!-- Progress Section -->
     <div class="progress-section">
-      <h3 class="progress-title">Progreso General</h3>
+      <h3 class="progress-title">Overall Progress</h3>
       <div class="progress-bar-container">
         <div class="progress-bar-background">
           <div class="progress-bar-fill" [style.width.%]="getProgressPercentage()"></div>
         </div>
-        <p class="progress-text">{{ getProgressPercentage() | number: '1.0-0' }}% completado</p>
+        <p class="progress-text">{{ getProgressPercentage() | number: '1.0-0' }}% completed</p>
       </div>
     </div>
 
     <!-- Action Section -->
     <div class="action-section">
       <button class="btn btn-primary btn-lg" (click)="navigateToTasks()">
-        <span>Ir a mis tareas</span>
+        <span>View my tasks</span>
       </button>
     </div>
   </div>

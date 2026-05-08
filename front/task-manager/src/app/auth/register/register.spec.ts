@@ -67,7 +67,7 @@ describe('RegisterComponent', () => {
 
   it('should call signUp and show success message', () => {
     (authService.signUp as any).mockReturnValue(
-      of({ success: true, message: 'Cuenta creada exitosamente' }),
+      of({ success: true, message: 'Account created successfully' }),
     );
 
     component.registerForm.patchValue({
@@ -86,7 +86,7 @@ describe('RegisterComponent', () => {
       email: 'a@a.com',
       password: 'secret12',
     });
-    expect(component.successMessage).toContain('Cuenta creada exitosamente');
+    expect(component.successMessage).toContain('Account created successfully');
 
     vi.runAllTimers();
 
